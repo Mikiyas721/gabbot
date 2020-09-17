@@ -18,7 +18,7 @@ export default (bot) => {
                     {
                         keyboard:
                             [
-                                [{text: 'You'}, {text: 'Partner'}]
+                                [{text: 'Your Sex'}, {text: "Partner's Sex"}]
                             ], resize_keyboard: true
                     }
             }
@@ -31,17 +31,15 @@ export default (bot) => {
         ctx.reply('Chat ended.')
     });
 
-    const setDefault = (ctx) => { //TODO use async await
-        let x = DataBaseManger.getUserFromDatabase(ctx.message.chat.id);
+    const setDefault = async (ctx) => { //TODO use async await
+        let x = await DataBaseManger.getUserFromDatabase(ctx.message.chat.id);
         if (!x) {   // if null
             DataBaseManger.addUserToDatabase(new User(
                 ctx.message.chat.id,
                 ctx.message.chat.first_name,
                 ctx.message.chat.username,
                 Sex.UNSPECIFIED,
-                20,
                 Sex.UNSPECIFIED,
-                20
             ));
         }
     }

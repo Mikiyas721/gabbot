@@ -3,7 +3,8 @@
     "target": "es5",
     "module": "commonjs",
     "outDir": "build",
-    "sourceMap": true
+    "sourceMap": true,
+    "lib": [ "es2015" ]
   },
   "include": [
     "src/**/*"

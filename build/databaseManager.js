@@ -100,9 +100,7 @@ exports.default = {
                                 firstName: user.firstName == null ? saved.firstName : user.firstName,
                                 userName: user.userName == null ? saved.userName : user.userName,
                                 sex: user.sex == null ? saved.sex : user.sex,
-                                age: user.age == null ? saved.age : user.age,
                                 partnerSex: user.partnerSex == null ? saved.partnerSex : user.partnerSex,
-                                partnerAge: user.partnerAge == null ? saved.partnerAge : user.partnerAge,
                             }
                         }, function (error, response) {
                             if (error)

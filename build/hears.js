@@ -4,19 +4,7 @@ var databaseManager_1 = require("./databaseManager");
 var user_1 = require("./model/user");
 var sex_1 = require("./sex");
 exports.default = (function (bot) {
-    bot.hears('You', function (ctx) {
-        ctx.reply('Your Info', {
-            reply_markup: {
-                keyboard: [
-                    [
-                        { text: 'Sex' },
-                        { text: 'Age' }
-                    ]
-                ], resize_keyboard: true
-            }
-        });
-    });
-    bot.hears('Sex', function (ctx) {
+    bot.hears('Your Sex', function (ctx) {
         ctx.reply('Your Sex', {
             reply_markup: {
                 keyboard: [
@@ -34,11 +22,10 @@ exports.default = (function (bot) {
             reply_markup: {
                 keyboard: [
                     [
-                        { text: 'Sex' },
-                        { text: 'Age' }
+                        { text: 'Your Sex' },
+                        { text: "Partner's Sex" }
                     ],
                     [
-                        { text: 'Back' },
                         { text: 'Done' }
                     ]
                 ], resize_keyboard: true
@@ -51,11 +38,10 @@ exports.default = (function (bot) {
             reply_markup: {
                 keyboard: [
                     [
-                        { text: 'Sex' },
-                        { text: 'Age' }
+                        { text: 'Your Sex' },
+                        { text: "Partner's Sex" }
                     ],
                     [
-                        { text: 'Back' },
                         { text: 'Done' }
                     ]
                 ], resize_keyboard: true
@@ -68,50 +54,17 @@ exports.default = (function (bot) {
             reply_markup: {
                 keyboard: [
                     [
-                        { text: 'Sex' },
-                        { text: 'Age' }
+                        { text: 'Your Sex' },
+                        { text: "Partner's Sex" }
                     ],
                     [
-                        { text: 'Back' },
                         { text: 'Done' }
                     ]
                 ], resize_keyboard: true
             }
         });
     });
-    bot.hears('Age', function (ctx) {
-        ctx.reply('Please enter your age');
-        bot.on('text', function (ctx) {
-            databaseManager_1.default.updateUserData(new user_1.default(ctx.message.chat.id, null, null, null, parseInt(ctx.message.text)));
-            ctx.reply("Your age has been set to " + ctx.message.text, {
-                reply_markup: {
-                    keyboard: [
-                        [
-                            { text: 'Sex' },
-                            { text: 'Age' }
-                        ],
-                        [
-                            { text: 'Back' },
-                            { text: 'Done' }
-                        ]
-                    ], resize_keyboard: true
-                }
-            });
-        });
-    });
-    bot.hears('Partner', function (ctx) {
-        ctx.reply("Partner's Info", {
-            reply_markup: {
-                keyboard: [
-                    [
-                        { text: 'SEX' },
-                        { text: 'AGE' }
-                    ]
-                ], resize_keyboard: true
-            }
-        });
-    });
-    bot.hears('SEX', function (ctx) {
+    bot.hears("Partner's Sex", function (ctx) {
         ctx.reply("Your partner's sex", {
             reply_markup: {
                 keyboard: [
@@ -127,16 +80,15 @@ exports.default = (function (bot) {
         });
     });
     bot.hears('MALE', function (ctx) {
-        databaseManager_1.default.updateUserData(new user_1.default(ctx.message.chat.id, null, null, null, null, sex_1.Sex.MALE, null));
+        databaseManager_1.default.updateUserData(new user_1.default(ctx.message.chat.id, null, null, null, sex_1.Sex.MALE));
         ctx.reply("Your partner's sex has been set to male", {
             reply_markup: {
                 keyboard: [
                     [
-                        { text: 'SEX' },
-                        { text: 'AGE' }
+                        { text: 'Your Sex' },
+                        { text: "Partner's Sex" }
                     ],
                     [
-                        { text: 'Back' },
                         { text: 'Done' }
                     ]
                 ], resize_keyboard: true
@@ -144,16 +96,15 @@ exports.default = (function (bot) {
         });
     });
     bot.hears('FEMALE', function (ctx) {
-        databaseManager_1.default.updateUserData(new user_1.default(ctx.message.chat.id, null, null, null, null, sex_1.Sex.FEMALE, null));
+        databaseManager_1.default.updateUserData(new user_1.default(ctx.message.chat.id, null, null, null, sex_1.Sex.FEMALE));
         ctx.reply("Your partner's sex has been set to female", {
             reply_markup: {
                 keyboard: [
                     [
-                        { text: 'SEX' },
-                        { text: 'AGE' }
+                        { text: 'Your Sex' },
+                        { text: "Partner's Sex" }
                     ],
                     [
-                        { text: 'Back' },
                         { text: 'Done' }
                     ]
                 ], resize_keyboard: true
@@ -161,63 +112,18 @@ exports.default = (function (bot) {
         });
     });
     bot.hears('UNSPECIFIED', function (ctx) {
-        databaseManager_1.default.updateUserData(new user_1.default(ctx.message.chat.id, null, null, null, null, sex_1.Sex.UNSPECIFIED, null));
+        databaseManager_1.default.updateUserData(new user_1.default(ctx.message.chat.id, null, null, null, sex_1.Sex.UNSPECIFIED));
         ctx.reply("Your partner's sex isn't specified", {
             reply_markup: {
                 keyboard: [
                     [
-                        { text: 'SEX' },
-                        { text: 'AGE' }
+                        { text: 'Your Sex' },
+                        { text: "Partner's Sex" }
                     ],
                     [
-                        { text: 'Back' },
                         { text: 'Done' }
                     ]
                 ], resize_keyboard: true
-            }
-        });
-    });
-    bot.hears('AGE', function (ctx) {
-        ctx.reply('Please enter your partners age');
-        bot.on('text', function (ctx) {
-            try {
-                var age = parseInt(ctx.message.text);
-                if (!isNaN(age)) {
-                    databaseManager_1.default.updateUserData(new user_1.default(ctx.message.chat.id, null, null, null, null, null, age));
-                    ctx.reply("Your partner's age has been set to " + age, {
-                        reply_markup: {
-                            keyboard: [
-                                [
-                                    { text: 'SEX' },
-                                    { text: 'AGE' }
-                                ],
-                                [
-                                    { text: 'Back' },
-                                    { text: 'Done' }
-                                ]
-                            ], resize_keyboard: true
-                        }
-                    });
-                }
-                else {
-                    ctx.reply("Invalid Information entered");
-                }
-            }
-            catch (e) {
-                console.log(e);
-                ctx.reply("Invalid Information entered");
-            }
-        });
-    });
-    bot.hears('Back', function (ctx) {
-        ctx.reply('Main Menu', {
-            reply_markup: {
-                keyboard: [
-                    [
-                        { text: 'You' },
-                        { text: 'Partner' }
-                    ],
-                ], resize_keyboard: true,
             }
         });
     });
