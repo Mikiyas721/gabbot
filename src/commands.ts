@@ -1,5 +1,10 @@
+import DataBaseManger from './databaseManager';
+import User from "./model/user";
+import {Sex} from './sex';
+
 export default (bot) => {
     bot.start((ctx) => {
+        setDefault(ctx);
         ctx.reply('Welcome',);
     });
     bot.command('help', (ctx) => {
@@ -25,4 +30,19 @@ export default (bot) => {
     bot.command('end', (ctx) => {
         ctx.reply('Chat ended.')
     });
+
+    const setDefault = (ctx) => { //TODO use async await
+        let x = DataBaseManger.getUserFromDatabase(ctx.message.chat.id);
+        if (!x) {   // if null
+            DataBaseManger.addUserToDatabase(new User(
+                ctx.message.chat.id,
+                ctx.message.chat.first_name,
+                ctx.message.chat.username,
+                Sex.UNSPECIFIED,
+                20,
+                Sex.UNSPECIFIED,
+                20
+            ));
+        }
+    }
 };

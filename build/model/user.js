@@ -1,6 +1,9 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var User = /** @class */ (function () {
-    function User(userId, userName, sex, age, partnerSex, partnerAge) {
+    function User(userId, firstName, userName, sex, age, partnerSex, partnerAge) {
         this.userId = userId;
+        this.firstName = firstName;
         this.userName = userName;
         this.sex = sex;
         this.age = age;
@@ -11,6 +14,7 @@ var User = /** @class */ (function () {
     User.prototype.toJson = function () {
         return {
             userId: this.userId,
+            firstName: this.firstName,
             userName: this.userName,
             sex: this.sex,
             age: this.age,
@@ -20,15 +24,11 @@ var User = /** @class */ (function () {
     };
     User.fromJson = function (json) {
         if (json) {
-            return new User(json.userId, json.userName, json.sex, json.age, json.partnerSex, json.partnerAge);
+            return new User(json.userId, json.firstName, json.userName, json.sex, json.age, json.partnerSex, json.partnerAge);
         }
         return null;
     };
     return User;
 }());
-var Sex;
-(function (Sex) {
-    Sex[Sex["MALE"] = 0] = "MALE";
-    Sex[Sex["FEMALE"] = 1] = "FEMALE";
-})(Sex || (Sex = {}));
+exports.default = User;
 //# sourceMappingURL=user.js.map

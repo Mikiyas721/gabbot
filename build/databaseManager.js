@@ -36,23 +36,24 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var config_1 = require("./config/config");
-var mongodb_1 = require("../node_modules/mongodb");
+var user_1 = require("./model/user");
+var mongodb_1 = require("mongodb");
 exports.default = {
-    getUserFromDatabase: function (userName) {
+    getUserFromDatabase: function (userId) {
         return __awaiter(this, void 0, void 0, function () {
             var database, myDataBase, userJson;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, mongodb_1.default.connect(config_1.default.DATABASE_URL, { useUnifiedTopology: true })];
+                    case 0: return [4 /*yield*/, mongodb_1.MongoClient.connect(config_1.default.DATABASE_URL, { useUnifiedTopology: true })];
                     case 1:
                         database = _a.sent();
                         return [4 /*yield*/, database.db('GabBot')];
                     case 2:
                         myDataBase = _a.sent();
-                        return [4 /*yield*/, myDataBase.collection('userPreference').findOne({ userName: userName })];
+                        return [4 /*yield*/, myDataBase.collection('userPreference').findOne({ userId: userId })];
                     case 3:
                         userJson = _a.sent();
-                        return [2 /*return*/, User.fromJson(userJson)];
+                        return [2 /*return*/, user_1.default.fromJson(userJson)];
                 }
             });
         });
@@ -62,7 +63,7 @@ exports.default = {
             var database, myDataBase;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, mongodb_1.default.connect(config_1.default.DATABASE_URL, { useUnifiedTopology: true })];
+                    case 0: return [4 /*yield*/, mongodb_1.MongoClient.connect(config_1.default.DATABASE_URL, { useUnifiedTopology: true })];
                     case 1:
                         database = _a.sent();
                         return [4 /*yield*/, database.db('GabBot')];
@@ -79,19 +80,30 @@ exports.default = {
             });
         });
     },
-    updateUserToDatabase: function (user) {
+    updateUserData: function (user) {
         return __awaiter(this, void 0, void 0, function () {
-            var database, myDataBase;
+            var database, myDataBase, saved;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, mongodb_1.default.connect(config_1.default.DATABASE_URL, { useUnifiedTopology: true })];
+                    case 0: return [4 /*yield*/, mongodb_1.MongoClient.connect(config_1.default.DATABASE_URL, { useUnifiedTopology: true })];
                     case 1:
                         database = _a.sent();
                         return [4 /*yield*/, database.db('GabBot')];
                     case 2:
                         myDataBase = _a.sent();
+                        return [4 /*yield*/, myDataBase.collection('userPreference').findOne({ userId: user.userId })];
+                    case 3:
+                        saved = _a.sent();
                         myDataBase.collection('userPreference').updateOne({ userId: user.userId }, {
-                            $set: user
+                            $set: {
+                                userId: user.userId,
+                                firstName: user.firstName == null ? saved.firstName : user.firstName,
+                                userName: user.userName == null ? saved.userName : user.userName,
+                                sex: user.sex == null ? saved.sex : user.sex,
+                                age: user.age == null ? saved.age : user.age,
+                                partnerSex: user.partnerSex == null ? saved.partnerSex : user.partnerSex,
+                                partnerAge: user.partnerAge == null ? saved.partnerAge : user.partnerAge,
+                            }
                         }, function (error, response) {
                             if (error)
                                 throw error;
@@ -107,7 +119,7 @@ exports.default = {
             var database, myDataBase;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, mongodb_1.default.connect(config_1.default.DATABASE_URL, { useUnifiedTopology: true })];
+                    case 0: return [4 /*yield*/, mongodb_1.MongoClient.connect(config_1.default.DATABASE_URL, { useUnifiedTopology: true })];
                     case 1:
                         database = _a.sent();
                         return [4 /*yield*/, database.db('GabBot')];

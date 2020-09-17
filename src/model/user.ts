@@ -1,17 +1,20 @@
-class User {
+import {Sex} from '../sex';
+export default class User {
     constructor(
-        public userId: string,
-        public userName: string,
-        public sex: Sex,
-        public age: number,
-        public partnerSex: Sex,
-        public partnerAge: number
+        public userId: number,
+        public firstName?: string,
+        public userName?: string,
+        public sex?: Sex,
+        public age?: number,
+        public partnerSex?: Sex,
+        public partnerAge?: number
     ) {
     };
 
     toJson() {
         return {
             userId: this.userId,
+            firstName: this.firstName,
             userName: this.userName,
             sex: this.sex,
             age: this.age,
@@ -22,7 +25,7 @@ class User {
 
     static fromJson(json): User {
         if (json) {
-            return new User(json.userId, json.userName,
+            return new User(json.userId, json.firstName,json.userName,
                 json.sex, json.age, json.partnerSex, json.partnerAge
             );
         }
@@ -30,7 +33,3 @@ class User {
     }
 }
 
-enum Sex {
-    MALE,
-    FEMALE,
-}

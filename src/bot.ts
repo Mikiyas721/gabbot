@@ -5,8 +5,7 @@ import command from './commands';
 
 const bot = new Telegraf(config.BOT_TOKEN);
 
-
-
 command(bot);
 hears(bot);
+
 bot.launch();
