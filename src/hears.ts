@@ -129,7 +129,7 @@ export default (bot) => {
         });
     });
     bot.hears('MALE', (ctx) => {
-        DataBaseManager.updateUserData(new User(ctx.message.chat.id, null, null, Sex.MALE, null));
+        DataBaseManager.updateUserData(new User(ctx.message.chat.id, null, null, null, null, Sex.MALE, null));
         ctx.reply("Your partner's sex has been set to male", {
             reply_markup: {
                 keyboard: [
@@ -146,7 +146,7 @@ export default (bot) => {
         });
     });
     bot.hears('FEMALE', (ctx) => {
-        DataBaseManager.updateUserData(new User(ctx.message.chat.id, null, null, Sex.FEMALE, null));
+        DataBaseManager.updateUserData(new User(ctx.message.chat.id, null, null, null, null, Sex.FEMALE, null));
         ctx.reply("Your partner's sex has been set to female", {
             reply_markup: {
                 keyboard: [
@@ -163,7 +163,7 @@ export default (bot) => {
         });
     });
     bot.hears('UNSPECIFIED', (ctx) => {
-        DataBaseManager.updateUserData(new User(ctx.message.chat.id, null, null, Sex.UNSPECIFIED, null));
+        DataBaseManager.updateUserData(new User(ctx.message.chat.id, null, null, null, null, Sex.UNSPECIFIED, null));
         ctx.reply("Your partner's sex isn't specified", {
             reply_markup: {
                 keyboard: [
@@ -182,22 +182,31 @@ export default (bot) => {
     bot.hears('AGE', (ctx) => {
         ctx.reply('Please enter your partners age');
         bot.on('text', (ctx) => {
-            //TODO check if the value entered is valid
-            DataBaseManager.updateUserData(new User(ctx.message.chat.id, null, null, null, null, null, parseInt(ctx.message.text)));
-            ctx.reply(`Your partner's age has been set to ${ctx.message.text}`, {
-                reply_markup: {
-                    keyboard: [
-                        [
-                            {text: 'SEX'},
-                            {text: 'AGE'}
-                        ],
-                        [
-                            {text: 'Back'},
-                            {text: 'Done'}
-                        ]
-                    ], resize_keyboard: true
+            try {
+                let age: number = parseInt(ctx.message.text);
+                if (!isNaN(age)) {
+                    DataBaseManager.updateUserData(new User(ctx.message.chat.id, null, null, null, null, null, age));
+                    ctx.reply(`Your partner's age has been set to ${age}`, {
+                        reply_markup: {
+                            keyboard: [
+                                [
+                                    {text: 'SEX'},
+                                    {text: 'AGE'}
+                                ],
+                                [
+                                    {text: 'Back'},
+                                    {text: 'Done'}
+                                ]
+                            ], resize_keyboard: true
+                        }
+                    });
+                } else {
+                    ctx.reply("Invalid Information entered");
                 }
-            });
+            } catch (e) {
+                console.log(e);
+                ctx.reply("Invalid Information entered");
+            }
         })
     });
 

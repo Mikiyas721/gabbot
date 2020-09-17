@@ -127,7 +127,7 @@ exports.default = (function (bot) {
         });
     });
     bot.hears('MALE', function (ctx) {
-        databaseManager_1.default.updateUserData(new user_1.default(ctx.message.chat.id, null, null, sex_1.Sex.MALE, null));
+        databaseManager_1.default.updateUserData(new user_1.default(ctx.message.chat.id, null, null, null, null, sex_1.Sex.MALE, null));
         ctx.reply("Your partner's sex has been set to male", {
             reply_markup: {
                 keyboard: [
@@ -144,7 +144,7 @@ exports.default = (function (bot) {
         });
     });
     bot.hears('FEMALE', function (ctx) {
-        databaseManager_1.default.updateUserData(new user_1.default(ctx.message.chat.id, null, null, sex_1.Sex.FEMALE, null));
+        databaseManager_1.default.updateUserData(new user_1.default(ctx.message.chat.id, null, null, null, null, sex_1.Sex.FEMALE, null));
         ctx.reply("Your partner's sex has been set to female", {
             reply_markup: {
                 keyboard: [
@@ -161,7 +161,7 @@ exports.default = (function (bot) {
         });
     });
     bot.hears('UNSPECIFIED', function (ctx) {
-        databaseManager_1.default.updateUserData(new user_1.default(ctx.message.chat.id, null, null, sex_1.Sex.UNSPECIFIED, null));
+        databaseManager_1.default.updateUserData(new user_1.default(ctx.message.chat.id, null, null, null, null, sex_1.Sex.UNSPECIFIED, null));
         ctx.reply("Your partner's sex isn't specified", {
             reply_markup: {
                 keyboard: [
@@ -180,22 +180,33 @@ exports.default = (function (bot) {
     bot.hears('AGE', function (ctx) {
         ctx.reply('Please enter your partners age');
         bot.on('text', function (ctx) {
-            //TODO check if the value entered is valid
-            databaseManager_1.default.updateUserData(new user_1.default(ctx.message.chat.id, null, null, null, null, null, parseInt(ctx.message.text)));
-            ctx.reply("Your partner's age has been set to " + ctx.message.text, {
-                reply_markup: {
-                    keyboard: [
-                        [
-                            { text: 'SEX' },
-                            { text: 'AGE' }
-                        ],
-                        [
-                            { text: 'Back' },
-                            { text: 'Done' }
-                        ]
-                    ], resize_keyboard: true
+            try {
+                var age = parseInt(ctx.message.text);
+                if (!isNaN(age)) {
+                    databaseManager_1.default.updateUserData(new user_1.default(ctx.message.chat.id, null, null, null, null, null, age));
+                    ctx.reply("Your partner's age has been set to " + age, {
+                        reply_markup: {
+                            keyboard: [
+                                [
+                                    { text: 'SEX' },
+                                    { text: 'AGE' }
+                                ],
+                                [
+                                    { text: 'Back' },
+                                    { text: 'Done' }
+                                ]
+                            ], resize_keyboard: true
+                        }
+                    });
                 }
-            });
+                else {
+                    ctx.reply("Invalid Information entered");
+                }
+            }
+            catch (e) {
+                console.log(e);
+                ctx.reply("Invalid Information entered");
+            }
         });
     });
     bot.hears('Back', function (ctx) {
