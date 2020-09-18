@@ -3,7 +3,6 @@ import User from "./model/user";
 import {Sex} from "./sex";
 
 export default (bot) => {
-
     bot.hears('Your Sex', (ctx) => {
         ctx.reply('Your Sex', {
             reply_markup: {

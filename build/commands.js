@@ -37,9 +37,9 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 var _this = this;
 Object.defineProperty(exports, "__esModule", { value: true });
 var databaseManager_1 = require("./databaseManager");
-var user_1 = require("./model/user");
 var sex_1 = require("./sex");
-exports.default = (function (bot) {
+var user_1 = require("./model/user");
+exports.default = (function (bot, chatScene) {
     bot.start(function (ctx) {
         setDefault(ctx);
         ctx.reply('Welcome');
@@ -57,11 +57,22 @@ exports.default = (function (bot) {
             }
         });
     });
-    bot.command('begin', function (ctx) {
-        ctx.reply('Searching..... This could take a while.');
-    });
+    bot.command('begin', function (ctx) { return __awaiter(_this, void 0, void 0, function () {
+        var partnerId;
+        return __generator(this, function (_a) {
+            partnerId = '1081281423';
+            ctx.scene.enter('chatScene', { partnerId: partnerId });
+            ctx.reply('I have sent confirmation message to your partner. Please wait patiently');
+            ctx.telegram.sendMessage(partnerId, "A partner is waiting for you. Press Confirm button below to start.", {
+                reply_markup: {
+                    inline_keyboard: [[{ text: 'Confirm', callback_data: "" + ctx.chat.id },]]
+                }
+            });
+            return [2 /*return*/];
+        });
+    }); });
     bot.command('end', function (ctx) {
-        ctx.reply('Chat ended.');
+        ctx.reply("You aren't in a chat");
     });
     var setDefault = function (ctx) { return __awaiter(_this, void 0, void 0, function () {
         var x;
@@ -77,5 +88,15 @@ exports.default = (function (bot) {
             }
         });
     }); };
+    chatScene.on('text', function (ctx) {
+        if (ctx.message.text == "/end") {
+            ctx.reply('Chat ended.');
+            ctx.telegram.sendMessage(ctx.scene.state.partnerId, 'Your partner has left the chat. Please press /end command.');
+            ctx.scene.leave();
+        }
+        else { // check if partner has confirmed request.
+            ctx.telegram.sendMessage(ctx.scene.state.partnerId, "" + ctx.message.text);
+        }
+    });
 });
 //# sourceMappingURL=commands.js.map

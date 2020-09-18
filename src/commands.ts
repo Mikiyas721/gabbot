@@ -1,11 +1,11 @@
 import DataBaseManger from './databaseManager';
-import User from "./model/user";
 import {Sex} from './sex';
+import User from "./model/user";
 
-export default (bot) => {
+export default (bot, chatScene) => {
     bot.start((ctx) => {
         setDefault(ctx);
-        ctx.reply('Welcome',);
+        ctx.reply('Welcome');
     });
     bot.command('help', (ctx) => {
         const message = '*Command Reference*\n/begin - Begin looking for partner\n/end - End Chat\n/help - Command reference\n/setup - Setup preference\n/start - Start Bot';
@@ -24,14 +24,25 @@ export default (bot) => {
             }
         )
     });
-    bot.command('begin', (ctx) => {
-        ctx.reply('Searching..... This could take a while.')
+    bot.command('begin', async (ctx) => {
+        // TODO look for a partner and set the partnerId
+        let partnerId: string = '1081281423';
+        ctx.scene.enter('chatScene', {partnerId:partnerId});
+        ctx.reply('I have sent confirmation message to your partner. Please wait patiently');
+        ctx.telegram.sendMessage(partnerId, `A partner is waiting for you. Press Confirm button below to start.`, {
+                reply_markup:
+                    {
+                        inline_keyboard:
+                            [[{text: 'Confirm', callback_data: `${ctx.chat.id}`},]]
+                    }
+            }
+        );
     });
     bot.command('end', (ctx) => {
-        ctx.reply('Chat ended.')
+        ctx.reply("You aren't in a chat");
     });
 
-    const setDefault = async (ctx) => { //TODO use async await
+    const setDefault = async (ctx) => {
         let x = await DataBaseManger.getUserFromDatabase(ctx.message.chat.id);
         if (!x) {   // if null
             DataBaseManger.addUserToDatabase(new User(
@@ -42,5 +53,14 @@ export default (bot) => {
                 Sex.UNSPECIFIED,
             ));
         }
-    }
+    };
+    chatScene.on('text', (ctx) => {
+        if (ctx.message.text == "/end") {
+            ctx.reply('Chat ended.');
+            ctx.telegram.sendMessage(ctx.scene.state.partnerId, 'Your partner has left the chat. Please press /end command.');
+            ctx.scene.leave();
+        } else { // check if partner has confirmed request.
+            ctx.telegram.sendMessage(ctx.scene.state.partnerId, `${ctx.message.text}`);
+        }
+    });
 };
