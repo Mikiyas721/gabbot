@@ -37,6 +37,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var config_1 = require("./config/config");
 var user_1 = require("./model/user");
+var confirm_1 = require("./model/confirm");
 var mongodb_1 = require("mongodb");
 exports.default = {
     getUserFromDatabase: function (userId) {
@@ -107,7 +108,7 @@ exports.default = {
                                 throw error;
                             database.close();
                         });
-                        return [2 /*return*/, null];
+                        return [2 /*return*/];
                 }
             });
         });
@@ -129,10 +130,102 @@ exports.default = {
                             database.close();
                             return response;
                         });
-                        return [2 /*return*/, null];
+                        return [2 /*return*/];
                 }
             });
         });
-    }
+    },
+    /** Confirmation **/
+    getConfirmationFromDatabase: function (senderId) {
+        return __awaiter(this, void 0, void 0, function () {
+            var database, myDataBase, confirmationJson;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, mongodb_1.MongoClient.connect(config_1.default.DATABASE_URL, { useUnifiedTopology: true })];
+                    case 1:
+                        database = _a.sent();
+                        return [4 /*yield*/, database.db('GabBot')];
+                    case 2:
+                        myDataBase = _a.sent();
+                        return [4 /*yield*/, myDataBase.collection('confirmationDetails').findOne({ senderId: senderId })];
+                    case 3:
+                        confirmationJson = _a.sent();
+                        return [2 /*return*/, confirm_1.default.fromJson(confirmationJson)];
+                }
+            });
+        });
+    },
+    registerConfirmationRequest: function (confirm) {
+        return __awaiter(this, void 0, void 0, function () {
+            var database, myDataBase;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, mongodb_1.MongoClient.connect(config_1.default.DATABASE_URL, { useUnifiedTopology: true })];
+                    case 1:
+                        database = _a.sent();
+                        return [4 /*yield*/, database.db('GabBot')];
+                    case 2:
+                        myDataBase = _a.sent();
+                        return [4 /*yield*/, myDataBase.collection('confirmationDetails').insertOne(confirm.toJson(), function (error, response) {
+                                if (error)
+                                    throw error;
+                            })];
+                    case 3:
+                        _a.sent();
+                        return [2 /*return*/];
+                }
+            });
+        });
+    },
+    updateConfirmation: function (confirm) {
+        return __awaiter(this, void 0, void 0, function () {
+            var database, myDataBase;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, mongodb_1.MongoClient.connect(config_1.default.DATABASE_URL, { useUnifiedTopology: true })];
+                    case 1:
+                        database = _a.sent();
+                        return [4 /*yield*/, database.db('GabBot')];
+                    case 2:
+                        myDataBase = _a.sent();
+                        myDataBase.collection('confirmationDetails').updateOne({ senderId: confirm.senderId }, {
+                            $set: {
+                                senderId: confirm.senderId,
+                                receiverId: confirm.receiverId,
+                                isConfirmed: confirm.isConfirmed,
+                            }
+                        }, function (error, response) {
+                            if (error)
+                                throw error;
+                            database.close();
+                        });
+                        return [2 /*return*/];
+                }
+            });
+        });
+    },
+    deleteConfirmationRequest: function (senderId) {
+        return __awaiter(this, void 0, void 0, function () {
+            var database, myDataBase;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, mongodb_1.MongoClient.connect(config_1.default.DATABASE_URL, { useUnifiedTopology: true })];
+                    case 1:
+                        database = _a.sent();
+                        return [4 /*yield*/, database.db('GabBot')];
+                    case 2:
+                        myDataBase = _a.sent();
+                        return [4 /*yield*/, myDataBase.collection('confirmationDetails').deleteOne({ senderId: senderId }, function (error, response) {
+                                if (error)
+                                    throw error;
+                                database.close();
+                            })];
+                    case 3:
+                        _a.sent();
+                        return [2 /*return*/];
+                }
+            });
+        });
+    },
 };
 //# sourceMappingURL=databaseManager.js.map

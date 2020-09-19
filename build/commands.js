@@ -39,6 +39,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var databaseManager_1 = require("./databaseManager");
 var sex_1 = require("./sex");
 var user_1 = require("./model/user");
+var confirm_1 = require("./model/confirm");
 exports.default = (function (bot, chatScene) {
     bot.start(function (ctx) {
         setDefault(ctx);
@@ -60,8 +61,8 @@ exports.default = (function (bot, chatScene) {
     bot.command('begin', function (ctx) { return __awaiter(_this, void 0, void 0, function () {
         var partnerId;
         return __generator(this, function (_a) {
-            partnerId = '1081281423';
-            ctx.scene.enter('chatScene', { partnerId: partnerId });
+            partnerId = 1081281423;
+            databaseManager_1.default.registerConfirmationRequest(new confirm_1.default(ctx.chat.id, partnerId));
             ctx.reply('I have sent confirmation message to your partner. Please wait patiently');
             ctx.telegram.sendMessage(partnerId, "A partner is waiting for you. Press Confirm button below to start.", {
                 reply_markup: {
@@ -74,6 +75,27 @@ exports.default = (function (bot, chatScene) {
     bot.command('end', function (ctx) {
         ctx.reply("You aren't in a chat");
     });
+    bot.on('message', function (ctx) { return __awaiter(_this, void 0, void 0, function () {
+        var confirm;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, databaseManager_1.default.getConfirmationFromDatabase(ctx.chat.id)];
+                case 1:
+                    confirm = _a.sent();
+                    if (!(confirm && confirm.isConfirmed)) return [3 /*break*/, 3];
+                    ctx.telegram.sendMessage(confirm.receiverId, "" + ctx.message.text);
+                    ctx.scene.enter('chatScene', { partnerId: confirm.receiverId });
+                    return [4 /*yield*/, databaseManager_1.default.deleteConfirmationRequest(confirm.senderId)];
+                case 2:
+                    _a.sent();
+                    return [3 /*break*/, 4];
+                case 3:
+                    ctx.reply("You aren't in a chat");
+                    _a.label = 4;
+                case 4: return [2 /*return*/];
+            }
+        });
+    }); });
     var setDefault = function (ctx) { return __awaiter(_this, void 0, void 0, function () {
         var x;
         return __generator(this, function (_a) {
@@ -91,10 +113,16 @@ exports.default = (function (bot, chatScene) {
     chatScene.on('text', function (ctx) {
         if (ctx.message.text == "/end") {
             ctx.reply('Chat ended.');
-            ctx.telegram.sendMessage(ctx.scene.state.partnerId, 'Your partner has left the chat. Please press /end command.');
+            ctx.telegram.sendMessage(ctx.scene.state.partnerId, 'Your partner has left the chat.Please press End button below', {
+                reply_markup: {
+                    inline_keyboard: [
+                        [{ text: 'End', callback_data: 'End' }]
+                    ]
+                }
+            });
             ctx.scene.leave();
         }
-        else { // check if partner has confirmed request.
+        else {
             ctx.telegram.sendMessage(ctx.scene.state.partnerId, "" + ctx.message.text);
         }
     });
