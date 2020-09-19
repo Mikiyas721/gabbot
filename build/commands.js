@@ -104,7 +104,7 @@ exports.default = (function (bot, chatScene) {
                 case 1:
                     x = _a.sent();
                     if (!x) { // if null
-                        databaseManager_1.default.addUserToDatabase(new user_1.default(ctx.message.chat.id, ctx.message.chat.first_name, ctx.message.chat.username, sex_1.Sex.UNSPECIFIED, sex_1.Sex.UNSPECIFIED));
+                        databaseManager_1.default.addUserToDatabase(false, new user_1.default(ctx.message.chat.id, ctx.message.chat.first_name, ctx.message.chat.username, sex_1.Sex.UNSPECIFIED, sex_1.Sex.UNSPECIFIED));
                     }
                     return [2 /*return*/];
             }

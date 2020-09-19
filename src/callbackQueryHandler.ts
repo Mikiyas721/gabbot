@@ -4,7 +4,7 @@ import DataBaseManger from './databaseManager';
 export default (bot) => {
     bot.on('callback_query', ctx => {
         let data: string = ctx.callbackQuery.data;
-        if (data == "End") {
+        if (data == "End") {   // TODO find a better way to end the chat.
             ctx.scene.leave();
             ctx.reply('Chat Ended');
             ctx.deleteMessage();

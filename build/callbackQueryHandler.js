@@ -5,7 +5,7 @@ var databaseManager_1 = require("./databaseManager");
 exports.default = (function (bot) {
     bot.on('callback_query', function (ctx) {
         var data = ctx.callbackQuery.data;
-        if (data == "End") {
+        if (data == "End") { // TODO find a better way to end the chat.
             ctx.scene.leave();
             ctx.reply('Chat Ended');
             ctx.deleteMessage();

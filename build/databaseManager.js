@@ -39,42 +39,52 @@ var config_1 = require("./config/config");
 var user_1 = require("./model/user");
 var confirm_1 = require("./model/confirm");
 var mongodb_1 = require("mongodb");
+function setUpDatabaseConnection() {
+    return __awaiter(this, void 0, void 0, function () {
+        var database;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, mongodb_1.MongoClient.connect(config_1.default.DATABASE_URL, { useUnifiedTopology: true })];
+                case 1:
+                    database = _a.sent();
+                    return [4 /*yield*/, database.db('GabBot')];
+                case 2: return [2 /*return*/, _a.sent()];
+            }
+        });
+    });
+}
 exports.default = {
     getUserFromDatabase: function (userId) {
         return __awaiter(this, void 0, void 0, function () {
-            var database, myDataBase, userJson;
+            var database, userJson;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, mongodb_1.MongoClient.connect(config_1.default.DATABASE_URL, { useUnifiedTopology: true })];
+                    case 0: return [4 /*yield*/, setUpDatabaseConnection()];
                     case 1:
                         database = _a.sent();
-                        return [4 /*yield*/, database.db('GabBot')];
+                        return [4 /*yield*/, database.collection('userPreference').findOne({ userId: userId })];
                     case 2:
-                        myDataBase = _a.sent();
-                        return [4 /*yield*/, myDataBase.collection('userPreference').findOne({ userId: userId })];
-                    case 3:
                         userJson = _a.sent();
                         return [2 /*return*/, user_1.default.fromJson(userJson)];
                 }
             });
         });
     },
-    addUserToDatabase: function (user) {
+    addUserToDatabase: function (isPending, user) {
         return __awaiter(this, void 0, void 0, function () {
-            var database, myDataBase;
+            var collection, database;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, mongodb_1.MongoClient.connect(config_1.default.DATABASE_URL, { useUnifiedTopology: true })];
+                    case 0:
+                        collection = isPending ? "pendingUser" : "userPreference";
+                        return [4 /*yield*/, setUpDatabaseConnection()];
                     case 1:
                         database = _a.sent();
-                        return [4 /*yield*/, database.db('GabBot')];
-                    case 2:
-                        myDataBase = _a.sent();
-                        return [4 /*yield*/, myDataBase.collection('userPreference').insertOne(user.toJson(), function (error, response) {
+                        return [4 /*yield*/, database.collection(collection).insertOne(user.toJson(), function (error, response) {
                                 if (error)
                                     throw error;
                             })];
-                    case 3:
+                    case 2:
                         _a.sent();
                         return [2 /*return*/, null];
                 }
@@ -83,19 +93,16 @@ exports.default = {
     },
     updateUserData: function (user) {
         return __awaiter(this, void 0, void 0, function () {
-            var database, myDataBase, saved;
+            var database, saved;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, mongodb_1.MongoClient.connect(config_1.default.DATABASE_URL, { useUnifiedTopology: true })];
+                    case 0: return [4 /*yield*/, setUpDatabaseConnection()];
                     case 1:
                         database = _a.sent();
-                        return [4 /*yield*/, database.db('GabBot')];
+                        return [4 /*yield*/, database.collection('userPreference').findOne({ userId: user.userId })];
                     case 2:
-                        myDataBase = _a.sent();
-                        return [4 /*yield*/, myDataBase.collection('userPreference').findOne({ userId: user.userId })];
-                    case 3:
                         saved = _a.sent();
-                        myDataBase.collection('userPreference').updateOne({ userId: user.userId }, {
+                        database.collection('userPreference').updateOne({ userId: user.userId }, {
                             $set: {
                                 userId: user.userId,
                                 firstName: user.firstName == null ? saved.firstName : user.firstName,
@@ -113,18 +120,17 @@ exports.default = {
             });
         });
     },
-    deleteUserFromDatabase: function (userId) {
+    deleteUserFromDatabase: function (isPending, userId) {
         return __awaiter(this, void 0, void 0, function () {
-            var database, myDataBase;
+            var collection, database;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, mongodb_1.MongoClient.connect(config_1.default.DATABASE_URL, { useUnifiedTopology: true })];
+                    case 0:
+                        collection = isPending ? "pendingUser" : "userPreference";
+                        return [4 /*yield*/, setUpDatabaseConnection()];
                     case 1:
                         database = _a.sent();
-                        return [4 /*yield*/, database.db('GabBot')];
-                    case 2:
-                        myDataBase = _a.sent();
-                        myDataBase.collection('userPreference').deleteOne({ userId: userId }, function (error, response) {
+                        database.collection(collection).deleteOne({ userId: userId }, function (error, response) {
                             if (error)
                                 throw error;
                             database.close();
@@ -138,17 +144,14 @@ exports.default = {
     /** Confirmation **/
     getConfirmationFromDatabase: function (senderId) {
         return __awaiter(this, void 0, void 0, function () {
-            var database, myDataBase, confirmationJson;
+            var database, confirmationJson;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, mongodb_1.MongoClient.connect(config_1.default.DATABASE_URL, { useUnifiedTopology: true })];
+                    case 0: return [4 /*yield*/, setUpDatabaseConnection()];
                     case 1:
                         database = _a.sent();
-                        return [4 /*yield*/, database.db('GabBot')];
+                        return [4 /*yield*/, database.collection('confirmationDetails').findOne({ senderId: senderId })];
                     case 2:
-                        myDataBase = _a.sent();
-                        return [4 /*yield*/, myDataBase.collection('confirmationDetails').findOne({ senderId: senderId })];
-                    case 3:
                         confirmationJson = _a.sent();
                         return [2 /*return*/, confirm_1.default.fromJson(confirmationJson)];
                 }
@@ -157,20 +160,17 @@ exports.default = {
     },
     registerConfirmationRequest: function (confirm) {
         return __awaiter(this, void 0, void 0, function () {
-            var database, myDataBase;
+            var database;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, mongodb_1.MongoClient.connect(config_1.default.DATABASE_URL, { useUnifiedTopology: true })];
+                    case 0: return [4 /*yield*/, setUpDatabaseConnection()];
                     case 1:
                         database = _a.sent();
-                        return [4 /*yield*/, database.db('GabBot')];
-                    case 2:
-                        myDataBase = _a.sent();
-                        return [4 /*yield*/, myDataBase.collection('confirmationDetails').insertOne(confirm.toJson(), function (error, response) {
+                        return [4 /*yield*/, database.collection('confirmationDetails').insertOne(confirm.toJson(), function (error, response) {
                                 if (error)
                                     throw error;
                             })];
-                    case 3:
+                    case 2:
                         _a.sent();
                         return [2 /*return*/];
                 }
@@ -179,16 +179,13 @@ exports.default = {
     },
     updateConfirmation: function (confirm) {
         return __awaiter(this, void 0, void 0, function () {
-            var database, myDataBase;
+            var database;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, mongodb_1.MongoClient.connect(config_1.default.DATABASE_URL, { useUnifiedTopology: true })];
+                    case 0: return [4 /*yield*/, setUpDatabaseConnection()];
                     case 1:
                         database = _a.sent();
-                        return [4 /*yield*/, database.db('GabBot')];
-                    case 2:
-                        myDataBase = _a.sent();
-                        myDataBase.collection('confirmationDetails').updateOne({ senderId: confirm.senderId }, {
+                        database.collection('confirmationDetails').updateOne({ senderId: confirm.senderId }, {
                             $set: {
                                 senderId: confirm.senderId,
                                 receiverId: confirm.receiverId,
@@ -206,21 +203,18 @@ exports.default = {
     },
     deleteConfirmationRequest: function (senderId) {
         return __awaiter(this, void 0, void 0, function () {
-            var database, myDataBase;
+            var database;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, mongodb_1.MongoClient.connect(config_1.default.DATABASE_URL, { useUnifiedTopology: true })];
+                    case 0: return [4 /*yield*/, setUpDatabaseConnection()];
                     case 1:
                         database = _a.sent();
-                        return [4 /*yield*/, database.db('GabBot')];
-                    case 2:
-                        myDataBase = _a.sent();
-                        return [4 /*yield*/, myDataBase.collection('confirmationDetails').deleteOne({ senderId: senderId }, function (error, response) {
+                        return [4 /*yield*/, database.collection('confirmationDetails').deleteOne({ senderId: senderId }, function (error, response) {
                                 if (error)
                                     throw error;
                                 database.close();
                             })];
-                    case 3:
+                    case 2:
                         _a.sent();
                         return [2 /*return*/];
                 }

@@ -55,7 +55,7 @@ export default (bot, chatScene) => {
     const setDefault = async (ctx) => {
         let x = await DataBaseManger.getUserFromDatabase(ctx.message.chat.id);
         if (!x) {   // if null
-            DataBaseManger.addUserToDatabase(new User(
+            DataBaseManger.addUserToDatabase(false,new User(
                 ctx.message.chat.id,
                 ctx.message.chat.first_name,
                 ctx.message.chat.username,
