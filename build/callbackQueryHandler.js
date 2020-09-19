@@ -13,6 +13,7 @@ exports.default = (function (bot) {
         else {
             ctx.scene.enter('chatScene', { partnerId: data });
             databaseManager_1.default.updateConfirmation(new confirm_1.default(parseInt(data), ctx.chat.id, true));
+            databaseManager_1.default.deleteUserFromDatabase(true, parseInt(data));
             ctx.telegram.sendMessage(data, 'Your partner has confirmed your request. Have a nice chat.');
             ctx.reply('Request confirmed. Have a nice chat.');
             ctx.deleteMessage();

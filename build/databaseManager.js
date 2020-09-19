@@ -72,26 +72,27 @@ exports.default = {
     },
     getPendingUsers: function (thisUser) {
         return __awaiter(this, void 0, void 0, function () {
-            var database, cursor, pendingList, next;
+            var database, cursor, pendingList, hasValue, document;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, setUpDatabaseConnection()];
                     case 1:
                         database = _a.sent();
-                        return [4 /*yield*/, database.collection('pendingUsers').find({ $and: [{ partnersSex: thisUser.sex }, { sex: thisUser.partnerSex }] })];
+                        return [4 /*yield*/, database.collection('pendingUsers').find({ $and: [{ partnerSex: thisUser.sex }, { sex: thisUser.partnerSex }] })];
                     case 2:
                         cursor = _a.sent();
                         pendingList = [];
-                        if (!cursor) return [3 /*break*/, 5];
+                        hasValue = true;
                         _a.label = 3;
                     case 3:
-                        if (!!cursor.isClosed()) return [3 /*break*/, 5];
+                        if (!hasValue) return [3 /*break*/, 5];
                         return [4 /*yield*/, cursor.next()];
                     case 4:
-                        next = _a.sent();
-                        if (next !== null) {
-                            pendingList.push(next);
-                        }
+                        document = _a.sent();
+                        if (document === null)
+                            hasValue = false;
+                        else
+                            pendingList.push(document);
                         return [3 /*break*/, 3];
                     case 5: return [2 /*return*/, pendingList];
                 }
@@ -222,7 +223,6 @@ exports.default = {
                         }, function (error, response) {
                             if (error)
                                 throw error;
-                            database.close();
                         });
                         return [2 /*return*/];
                 }

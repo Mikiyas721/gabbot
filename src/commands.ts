@@ -3,6 +3,16 @@ import {Sex} from './sex';
 import User from "./model/user";
 import Confirmation from "./model/confirm";
 
+async function getRandomPartner(user: User): Promise<number> {
+    let pendingUsers: object[] = await DataBaseManger.getPendingUsers(user);
+    if (pendingUsers.length !== 0) {
+        let random: number = Math.floor(Math.random() * pendingUsers.length);
+        let randomPartner: any = pendingUsers[random];
+        return randomPartner.userId;
+    }
+    return null;
+}
+
 export default (bot, chatScene) => {
     bot.start((ctx) => {
         setDefault(ctx);
@@ -26,17 +36,24 @@ export default (bot, chatScene) => {
         )
     });
     bot.command('begin', async (ctx) => {
-        let partnerId: number = 1081281423;
-        DataBaseManger.registerConfirmationRequest(new Confirmation(ctx.chat.id, partnerId));
-        ctx.reply('I have sent confirmation message to your partner. Please wait patiently');
-        ctx.telegram.sendMessage(partnerId, `A partner is waiting for you. Press Confirm button below to start.`, {
-                reply_markup:
-                    {
-                        inline_keyboard:
-                            [[{text: 'Confirm', callback_data: `${ctx.chat.id}`},]]
-                    }
-            }
-        );
+        let user: User = await DataBaseManger.getUserFromDatabase(ctx.chat.id);
+        //TODO handle possible null Error
+        let partnerId: number = await getRandomPartner(user);
+        if (partnerId) {
+            DataBaseManger.registerConfirmationRequest(new Confirmation(ctx.chat.id, partnerId));
+            ctx.reply('I have sent confirmation message to your partner. Please wait patiently');
+            ctx.telegram.sendMessage(partnerId, `A partner is waiting for you. Press Confirm button below to start.`, {
+                    reply_markup:
+                        {
+                            inline_keyboard:
+                                [[{text: 'Confirm', callback_data: `${ctx.chat.id}`},]]
+                        }
+                }
+            );
+        } else {
+            DataBaseManger.addUserToDatabase(true, user);
+            ctx.reply('I am searching for a partner for you. You will get a confirmation request when I find a partner.');
+        }
     });
     bot.command('end', (ctx) => {
         ctx.reply("You aren't in a chat");
@@ -54,7 +71,7 @@ export default (bot, chatScene) => {
     const setDefault = async (ctx) => {
         let x = await DataBaseManger.getUserFromDatabase(ctx.message.chat.id);
         if (!x) {   // if null
-            DataBaseManger.addUserToDatabase(false,new User(
+            DataBaseManger.addUserToDatabase(false, new User(
                 ctx.message.chat.id,
                 ctx.message.chat.first_name,
                 ctx.message.chat.username,
@@ -71,7 +88,7 @@ export default (bot, chatScene) => {
                     reply_markup: {
                         inline_keyboard:
                             [
-                                [{text: 'End', callback_data:'End'}]
+                                [{text: 'End', callback_data: 'End'}]
                             ]
                     }
                 });

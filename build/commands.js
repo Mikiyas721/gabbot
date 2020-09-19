@@ -40,6 +40,24 @@ var databaseManager_1 = require("./databaseManager");
 var sex_1 = require("./sex");
 var user_1 = require("./model/user");
 var confirm_1 = require("./model/confirm");
+function getRandomPartner(user) {
+    return __awaiter(this, void 0, void 0, function () {
+        var pendingUsers, random, randomPartner;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, databaseManager_1.default.getPendingUsers(user)];
+                case 1:
+                    pendingUsers = _a.sent();
+                    if (pendingUsers.length !== 0) {
+                        random = Math.floor(Math.random() * pendingUsers.length);
+                        randomPartner = pendingUsers[random];
+                        return [2 /*return*/, randomPartner.userId];
+                    }
+                    return [2 /*return*/, null];
+            }
+        });
+    });
+}
 exports.default = (function (bot, chatScene) {
     bot.start(function (ctx) {
         setDefault(ctx);
@@ -59,17 +77,30 @@ exports.default = (function (bot, chatScene) {
         });
     });
     bot.command('begin', function (ctx) { return __awaiter(_this, void 0, void 0, function () {
-        var partnerId;
+        var user, partnerId;
         return __generator(this, function (_a) {
-            partnerId = 1081281423;
-            databaseManager_1.default.registerConfirmationRequest(new confirm_1.default(ctx.chat.id, partnerId));
-            ctx.reply('I have sent confirmation message to your partner. Please wait patiently');
-            ctx.telegram.sendMessage(partnerId, "A partner is waiting for you. Press Confirm button below to start.", {
-                reply_markup: {
-                    inline_keyboard: [[{ text: 'Confirm', callback_data: "" + ctx.chat.id },]]
-                }
-            });
-            return [2 /*return*/];
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, databaseManager_1.default.getUserFromDatabase(ctx.chat.id)];
+                case 1:
+                    user = _a.sent();
+                    return [4 /*yield*/, getRandomPartner(user)];
+                case 2:
+                    partnerId = _a.sent();
+                    if (partnerId) {
+                        databaseManager_1.default.registerConfirmationRequest(new confirm_1.default(ctx.chat.id, partnerId));
+                        ctx.reply('I have sent confirmation message to your partner. Please wait patiently');
+                        ctx.telegram.sendMessage(partnerId, "A partner is waiting for you. Press Confirm button below to start.", {
+                            reply_markup: {
+                                inline_keyboard: [[{ text: 'Confirm', callback_data: "" + ctx.chat.id },]]
+                            }
+                        });
+                    }
+                    else {
+                        databaseManager_1.default.addUserToDatabase(true, user);
+                        ctx.reply('I am searching for a partner for you. You will get a confirmation request when I find a partner.');
+                    }
+                    return [2 /*return*/];
+            }
         });
     }); });
     bot.command('end', function (ctx) {

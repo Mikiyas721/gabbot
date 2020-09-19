@@ -16,15 +16,14 @@ export default {
     },
     async getPendingUsers(thisUser: User): Promise<object[]> {
         const database = await setUpDatabaseConnection();
-        const cursor = await database.collection('pendingUsers').find({$and: [{partnersSex: thisUser.sex}, {sex: thisUser.partnerSex}]});
+        const cursor = await database.collection('pendingUsers').find({$and: [{partnerSex: thisUser.sex}, {sex: thisUser.partnerSex}]});
         let pendingList: object[] = [];
-        if (cursor) {
-            while (!cursor.isClosed()) {
-                let next = await cursor.next();
-                if (next !== null) {
-                    pendingList.push(next);
-                }
-            }
+        let hasValue = true;
+        while(hasValue){
+            let document = await cursor.next();
+            if(document===null) hasValue = false;
+            else pendingList.push(document);
+
         }
         return pendingList;
     },
@@ -53,7 +52,7 @@ export default {
             database.close();
         });
     },
-    async deleteUserFromDatabase(isPending: string, userId: String) {
+    async deleteUserFromDatabase(isPending: boolean, userId: number) {
         let collection: string;
         collection = isPending ? "pendingUsers" : "userPreference";
         const database = await setUpDatabaseConnection();
@@ -87,7 +86,6 @@ export default {
             }
         }, (error, response) => {
             if (error) throw error;
-            database.close();
         });
     },
     async deleteConfirmationRequest(senderId: number) {
