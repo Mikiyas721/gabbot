@@ -26,7 +26,6 @@ export default (bot, chatScene) => {
         )
     });
     bot.command('begin', async (ctx) => {
-        // TODO look for a partner and set the partnerId
         let partnerId: number = 1081281423;
         DataBaseManger.registerConfirmationRequest(new Confirmation(ctx.chat.id, partnerId));
         ctx.reply('I have sent confirmation message to your partner. Please wait patiently');

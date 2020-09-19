@@ -9,15 +9,28 @@ async function setUpDatabaseConnection() {
 }
 
 export default {
-
     async getUserFromDatabase(userId: number): Promise<User> {
         const database = await setUpDatabaseConnection();
         const userJson = await database.collection('userPreference').findOne({userId: userId});
         return User.fromJson(userJson);
     },
+    async getPendingUsers(thisUser: User): Promise<object[]> {
+        const database = await setUpDatabaseConnection();
+        const cursor = await database.collection('pendingUsers').find({$and: [{partnersSex: thisUser.sex}, {sex: thisUser.partnerSex}]});
+        let pendingList: object[] = [];
+        if (cursor) {
+            while (!cursor.isClosed()) {
+                let next = await cursor.next();
+                if (next !== null) {
+                    pendingList.push(next);
+                }
+            }
+        }
+        return pendingList;
+    },
     async addUserToDatabase(isPending, user: User) {
         let collection: string;
-        collection = isPending ? "pendingUser" : "userPreference";
+        collection = isPending ? "pendingUsers" : "userPreference";
         const database = await setUpDatabaseConnection();
         await database.collection(collection).insertOne(user.toJson(), (error, response) => {
             if (error) throw error;
@@ -42,7 +55,7 @@ export default {
     },
     async deleteUserFromDatabase(isPending: string, userId: String) {
         let collection: string;
-        collection = isPending ? "pendingUser" : "userPreference";
+        collection = isPending ? "pendingUsers" : "userPreference";
         const database = await setUpDatabaseConnection();
         database.collection(collection).deleteOne({userId: userId}, (error, response) => {
             if (error) throw error;

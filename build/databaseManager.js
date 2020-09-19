@@ -70,13 +70,41 @@ exports.default = {
             });
         });
     },
+    getPendingUsers: function (thisUser) {
+        return __awaiter(this, void 0, void 0, function () {
+            var database, cursor, pendingList, next;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, setUpDatabaseConnection()];
+                    case 1:
+                        database = _a.sent();
+                        return [4 /*yield*/, database.collection('pendingUsers').find({ $and: [{ partnersSex: thisUser.sex }, { sex: thisUser.partnerSex }] })];
+                    case 2:
+                        cursor = _a.sent();
+                        pendingList = [];
+                        if (!cursor) return [3 /*break*/, 5];
+                        _a.label = 3;
+                    case 3:
+                        if (!!cursor.isClosed()) return [3 /*break*/, 5];
+                        return [4 /*yield*/, cursor.next()];
+                    case 4:
+                        next = _a.sent();
+                        if (next !== null) {
+                            pendingList.push(next);
+                        }
+                        return [3 /*break*/, 3];
+                    case 5: return [2 /*return*/, pendingList];
+                }
+            });
+        });
+    },
     addUserToDatabase: function (isPending, user) {
         return __awaiter(this, void 0, void 0, function () {
             var collection, database;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        collection = isPending ? "pendingUser" : "userPreference";
+                        collection = isPending ? "pendingUsers" : "userPreference";
                         return [4 /*yield*/, setUpDatabaseConnection()];
                     case 1:
                         database = _a.sent();
@@ -126,7 +154,7 @@ exports.default = {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        collection = isPending ? "pendingUser" : "userPreference";
+                        collection = isPending ? "pendingUsers" : "userPreference";
                         return [4 /*yield*/, setUpDatabaseConnection()];
                     case 1:
                         database = _a.sent();
