@@ -1,7 +1,7 @@
 import DataBaseManger from './databaseManager';
 import {Sex} from './sex';
 import User from "./model/user";
-import Confirmation from "./model/confirm";
+import MatchedUsers from "./model/matchedUsers";
 
 async function getRandomPartner(user: User): Promise<number> {
     let pendingUsers: object[] = await DataBaseManger.getPendingUsers(user);
@@ -13,7 +13,7 @@ async function getRandomPartner(user: User): Promise<number> {
     return null;
 }
 
-export default (bot, chatScene) => {
+export default (bot) => {
     bot.start((ctx) => {
         setDefault(ctx);
         ctx.reply('Welcome');
@@ -40,38 +40,33 @@ export default (bot, chatScene) => {
         //TODO handle possible null Error
         let partnerId: number = await getRandomPartner(user);
         if (partnerId) {
-            DataBaseManger.registerConfirmationRequest(new Confirmation(ctx.chat.id, partnerId));
-            ctx.reply('I have sent confirmation message to your partner. Please wait patiently');
-            ctx.telegram.sendMessage(partnerId, `A partner is waiting for you. Press Confirm button below to start.`, {
-                    reply_markup:
-                        {
-                            inline_keyboard:
-                                [[{text: 'Confirm', callback_data: `${ctx.chat.id}`},]]
-                        }
-                }
-            );
+            await DataBaseManger.registerMatchedUsers(new MatchedUsers(ctx.chat.id, partnerId));
+            await DataBaseManger.deleteUserFromDatabase(true, partnerId);
+            await ctx.scene.enter('chatRoom', {partnerId: partnerId});
+            await ctx.reply('Your partner is here 😊. Have a nice chat');
+            await ctx.telegram.sendMessage(partnerId, `Your partner is here 😊. Have a nice chat.`);
         } else {
-            DataBaseManger.addUserToDatabase(true, user);
-            ctx.reply('I am searching for a partner for you. You will get a confirmation request when I find a partner.');
+            await ctx.reply("Unfortunately, I couldn't find a partner now 😔.I will keep searching and match you as soon as possible 🙂");
+            await DataBaseManger.addUserToDatabase(true, user);
         }
     });
     bot.command('end', (ctx) => {
         ctx.reply("You aren't in a chat");
     });
-    bot.on('message', async (ctx) => {
-        let confirm: Confirmation = await DataBaseManger.getConfirmationFromDatabase(ctx.chat.id);
-        if (confirm && confirm.isConfirmed) {
-            ctx.telegram.sendMessage(confirm.receiverId, `${ctx.message.text}`);
-            ctx.scene.enter('chatScene', {partnerId: confirm.receiverId});
-            await DataBaseManger.deleteConfirmationRequest(confirm.senderId);
+    bot.on('text', async (ctx) => {
+        let match: MatchedUsers = await DataBaseManger.getMatchedUser(ctx.chat.id);
+        if (match) {
+            await ctx.telegram.sendMessage(match.firstUserId, ctx.message.text)
+            await ctx.scene.enter('chatRoom', {partnerId: match.firstUserId});
+            await DataBaseManger.deleteMatchedUsers(match.firstUserId);
         } else {
-            ctx.reply("You aren't in a chat");
+            await ctx.reply("You aren't in a chat");
         }
     });
     const setDefault = async (ctx) => {
         let x = await DataBaseManger.getUserFromDatabase(ctx.message.chat.id);
         if (!x) {   // if null
-            DataBaseManger.addUserToDatabase(false, new User(
+            await DataBaseManger.addUserToDatabase(false, new User(
                 ctx.message.chat.id,
                 ctx.message.chat.first_name,
                 ctx.message.chat.username,
@@ -80,39 +75,4 @@ export default (bot, chatScene) => {
             ));
         }
     };
-    chatScene.on('text', (ctx) => {
-        if (ctx.message.text == "/end") {
-            ctx.reply('Chat ended.');
-            ctx.telegram.sendMessage(ctx.scene.state.partnerId, 'Your partner has left the chat.Please press End button below',
-                {
-                    reply_markup: {
-                        inline_keyboard:
-                            [
-                                [{text: 'End', callback_data: 'End'}]
-                            ]
-                    }
-                });
-            ctx.scene.leave();
-        } else {
-            ctx.telegram.sendMessage(ctx.scene.state.partnerId, `${ctx.message.text}`);
-        }
-    });
-    chatScene.on('audio', (ctx)=>{
-        ctx.telegram.sendAudio(ctx.scene.state.partnerId, ctx.message.audio);
-    });
-    chatScene.on('document', (ctx)=>{
-        ctx.telegram.sendAudio(ctx.scene.state.partnerId, ctx.message.document);
-    });
-    chatScene.on('photo', (ctx)=>{
-        ctx.telegram.sendAudio(ctx.scene.state.partnerId, ctx.message.photo);
-    });
-    chatScene.on('sticker', (ctx)=>{
-        ctx.telegram.sendAudio(ctx.scene.state.partnerId, ctx.message.sticker);
-    });
-    chatScene.on('video', (ctx)=>{
-        ctx.telegram.sendAudio(ctx.scene.state.partnerId, ctx.message.video);
-    });
-    chatScene.on('voice', (ctx)=>{
-        ctx.telegram.sendAudio(ctx.scene.state.partnerId, ctx.message.voice);
-    });
 };

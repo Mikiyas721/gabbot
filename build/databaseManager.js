@@ -38,7 +38,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var config_1 = require("./config/config");
 var user_1 = require("./model/user");
-var confirm_1 = require("./model/confirm");
+var matchedUsers_1 = require("./model/matchedUsers");
 var mongodb_1 = require("mongodb");
 function setUpDatabaseConnection() {
     return __awaiter(this, void 0, void 0, function () {
@@ -143,7 +143,6 @@ exports.default = {
                         }, function (error, response) {
                             if (error)
                                 throw error;
-                            database.close();
                         });
                         return [2 /*return*/];
                 }
@@ -163,32 +162,30 @@ exports.default = {
                         database.collection(collection).deleteOne({ userId: userId }, function (error, response) {
                             if (error)
                                 throw error;
-                            database.close();
-                            return response;
                         });
                         return [2 /*return*/];
                 }
             });
         });
     },
-    /** Confirmation **/
-    getConfirmationFromDatabase: function (senderId) {
+    /** MatchedUsers **/
+    getMatchedUser: function (userId) {
         return __awaiter(this, void 0, void 0, function () {
-            var database, confirmationJson;
+            var database, matchedJson;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, setUpDatabaseConnection()];
                     case 1:
                         database = _a.sent();
-                        return [4 /*yield*/, database.collection('confirmationDetails').findOne({ senderId: senderId })];
+                        return [4 /*yield*/, database.collection('matchedUsers').findOne({ $or: [{ firstUserId: userId }, { secondUserId: userId }] })];
                     case 2:
-                        confirmationJson = _a.sent();
-                        return [2 /*return*/, confirm_1.default.fromJson(confirmationJson)];
+                        matchedJson = _a.sent();
+                        return [2 /*return*/, matchedUsers_1.default.fromJson(matchedJson)];
                 }
             });
         });
     },
-    registerConfirmationRequest: function (confirm) {
+    registerMatchedUsers: function (matchedUsers) {
         return __awaiter(this, void 0, void 0, function () {
             var database;
             return __generator(this, function (_a) {
@@ -196,7 +193,7 @@ exports.default = {
                     case 0: return [4 /*yield*/, setUpDatabaseConnection()];
                     case 1:
                         database = _a.sent();
-                        return [4 /*yield*/, database.collection('confirmationDetails').insertOne(confirm.toJson(), function (error, response) {
+                        return [4 /*yield*/, database.collection('matchedUsers').insertOne(matchedUsers.toJson(), function (error, response) {
                                 if (error)
                                     throw error;
                             })];
@@ -207,7 +204,7 @@ exports.default = {
             });
         });
     },
-    updateConfirmation: function (confirm) {
+    updateMatched: function (confirm) {
         return __awaiter(this, void 0, void 0, function () {
             var database;
             return __generator(this, function (_a) {
@@ -215,11 +212,10 @@ exports.default = {
                     case 0: return [4 /*yield*/, setUpDatabaseConnection()];
                     case 1:
                         database = _a.sent();
-                        database.collection('confirmationDetails').updateOne({ senderId: confirm.senderId }, {
+                        database.collection('matchedUsers').updateOne({ firstUserId: confirm.firstUserId }, {
                             $set: {
-                                senderId: confirm.senderId,
-                                receiverId: confirm.receiverId,
-                                isConfirmed: confirm.isConfirmed,
+                                firstUserId: confirm.firstUserId,
+                                secondUserId: confirm.secondUserId,
                             }
                         }, function (error, response) {
                             if (error)
@@ -230,7 +226,7 @@ exports.default = {
             });
         });
     },
-    deleteConfirmationRequest: function (senderId) {
+    deleteMatchedUsers: function (firstUserId) {
         return __awaiter(this, void 0, void 0, function () {
             var database;
             return __generator(this, function (_a) {
@@ -238,10 +234,9 @@ exports.default = {
                     case 0: return [4 /*yield*/, setUpDatabaseConnection()];
                     case 1:
                         database = _a.sent();
-                        return [4 /*yield*/, database.collection('confirmationDetails').deleteOne({ senderId: senderId }, function (error, response) {
+                        return [4 /*yield*/, database.collection('matchedUsers').deleteOne({ firstUserId: firstUserId }, function (error, response) {
                                 if (error)
                                     throw error;
-                                database.close();
                             })];
                     case 2:
                         _a.sent();

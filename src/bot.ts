@@ -7,18 +7,20 @@ import * as Stage from 'telegraf/stage';
 import hears from './hears';
 import command from './commands';
 import callBack from './callbackQueryHandler';
+import chatScene from "./chatScene";
 
 const bot = new Telegraf(config.BOT_TOKEN);
-const chattingScene = new Scene('chatScene');
+const chatRoom = new Scene('chatRoom');
 const stage = new Stage();
 
-stage.register(chattingScene);
+stage.register(chatRoom);
 
 bot.use(Session());
 bot.use(stage.middleware());
 
-command(bot,chattingScene);
+command(bot);
 hears(bot);
 callBack(bot);
+chatScene(chatRoom);
 
 bot.launch();

@@ -1,6 +1,6 @@
 import config from './config/config';
 import User from './model/user';
-import Confirmation from "./model/confirm";
+import MatchedUsers from "./model/matchedUsers";
 import {MongoClient} from "mongodb";
 
 async function setUpDatabaseConnection() {
@@ -23,7 +23,6 @@ export default {
             let document = await cursor.next();
             if(document===null) hasValue = false;
             else pendingList.push(document);
-
         }
         return pendingList;
     },
@@ -49,7 +48,6 @@ export default {
             }
         }, (error, response) => {
             if (error) throw error;
-            database.close();
         });
     },
     async deleteUserFromDatabase(isPending: boolean, userId: number) {
@@ -58,45 +56,39 @@ export default {
         const database = await setUpDatabaseConnection();
         database.collection(collection).deleteOne({userId: userId}, (error, response) => {
             if (error) throw error;
-            database.close();
-            return response;
         });
     },
 
-    /** Confirmation **/
+    /** MatchedUsers **/
 
-    async getConfirmationFromDatabase(senderId: number): Promise<Confirmation> {
+    async getMatchedUser(userId: number): Promise<MatchedUsers> {
         const database = await setUpDatabaseConnection();
-        const confirmationJson = await database.collection('confirmationDetails').findOne({senderId: senderId});
-        return Confirmation.fromJson(confirmationJson);
+        const matchedJson = await database.collection('matchedUsers').findOne({$or:[{firstUserId: userId},{secondUserId: userId}]});
+        return MatchedUsers.fromJson(matchedJson);
     },
-    async registerConfirmationRequest(confirm: Confirmation) {
+    async registerMatchedUsers(matchedUsers: MatchedUsers) {
         const database = await setUpDatabaseConnection();
-        await database.collection('confirmationDetails').insertOne(confirm.toJson(), (error, response) => {
+        await database.collection('matchedUsers').insertOne(matchedUsers.toJson(), (error, response) => {
             if (error) throw error;
         });
     },
-    async updateConfirmation(confirm: Confirmation) {
+    async updateMatched(confirm: MatchedUsers) {
         const database = await setUpDatabaseConnection();
-        database.collection('confirmationDetails').updateOne({senderId: confirm.senderId}, {
+        database.collection('matchedUsers').updateOne({firstUserId: confirm.firstUserId}, {
             $set: {
-                senderId: confirm.senderId,
-                receiverId: confirm.receiverId,
-                isConfirmed: confirm.isConfirmed,
+                firstUserId: confirm.firstUserId,
+                secondUserId: confirm.secondUserId,
             }
         }, (error, response) => {
             if (error) throw error;
         });
     },
-    async deleteConfirmationRequest(senderId: number) {
+    async deleteMatchedUsers(firstUserId: number) {
         const database = await setUpDatabaseConnection();
-        await database.collection('confirmationDetails').deleteOne({senderId: senderId}, (error, response) => {
+        await database.collection('matchedUsers').deleteOne({firstUserId: firstUserId}, (error, response) => {
             if (error) throw error;
-            database.close();
         });
     },
-
-    /** Looking for partner **/
 
 
 }
