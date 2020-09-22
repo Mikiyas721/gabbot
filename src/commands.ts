@@ -97,4 +97,22 @@ export default (bot, chatScene) => {
             ctx.telegram.sendMessage(ctx.scene.state.partnerId, `${ctx.message.text}`);
         }
     });
+    chatScene.on('audio', (ctx)=>{
+        ctx.telegram.sendAudio(ctx.scene.state.partnerId, ctx.message.audio);
+    });
+    chatScene.on('document', (ctx)=>{
+        ctx.telegram.sendAudio(ctx.scene.state.partnerId, ctx.message.document);
+    });
+    chatScene.on('photo', (ctx)=>{
+        ctx.telegram.sendAudio(ctx.scene.state.partnerId, ctx.message.photo);
+    });
+    chatScene.on('sticker', (ctx)=>{
+        ctx.telegram.sendAudio(ctx.scene.state.partnerId, ctx.message.sticker);
+    });
+    chatScene.on('video', (ctx)=>{
+        ctx.telegram.sendAudio(ctx.scene.state.partnerId, ctx.message.video);
+    });
+    chatScene.on('voice', (ctx)=>{
+        ctx.telegram.sendAudio(ctx.scene.state.partnerId, ctx.message.voice);
+    });
 };

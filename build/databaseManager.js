@@ -1,9 +1,10 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -72,7 +73,7 @@ exports.default = {
     },
     getPendingUsers: function (thisUser) {
         return __awaiter(this, void 0, void 0, function () {
-            var database, cursor, pendingList, hasValue, document;
+            var database, cursor, pendingList, hasValue, document_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, setUpDatabaseConnection()];
@@ -88,11 +89,11 @@ exports.default = {
                         if (!hasValue) return [3 /*break*/, 5];
                         return [4 /*yield*/, cursor.next()];
                     case 4:
-                        document = _a.sent();
-                        if (document === null)
+                        document_1 = _a.sent();
+                        if (document_1 === null)
                             hasValue = false;
                         else
-                            pendingList.push(document);
+                            pendingList.push(document_1);
                         return [3 /*break*/, 3];
                     case 5: return [2 /*return*/, pendingList];
                 }

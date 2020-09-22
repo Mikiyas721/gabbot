@@ -1,9 +1,10 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -34,7 +35,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var _this = this;
 Object.defineProperty(exports, "__esModule", { value: true });
 var databaseManager_1 = require("./databaseManager");
 var sex_1 = require("./sex");
@@ -76,7 +76,7 @@ exports.default = (function (bot, chatScene) {
             }
         });
     });
-    bot.command('begin', function (ctx) { return __awaiter(_this, void 0, void 0, function () {
+    bot.command('begin', function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
         var user, partnerId;
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -106,7 +106,7 @@ exports.default = (function (bot, chatScene) {
     bot.command('end', function (ctx) {
         ctx.reply("You aren't in a chat");
     });
-    bot.on('message', function (ctx) { return __awaiter(_this, void 0, void 0, function () {
+    bot.on('message', function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
         var confirm;
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -127,7 +127,7 @@ exports.default = (function (bot, chatScene) {
             }
         });
     }); });
-    var setDefault = function (ctx) { return __awaiter(_this, void 0, void 0, function () {
+    var setDefault = function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
         var x;
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -156,6 +156,24 @@ exports.default = (function (bot, chatScene) {
         else {
             ctx.telegram.sendMessage(ctx.scene.state.partnerId, "" + ctx.message.text);
         }
+    });
+    chatScene.on('audio', function (ctx) {
+        ctx.telegram.sendAudio(ctx.scene.state.partnerId, ctx.message.audio);
+    });
+    chatScene.on('document', function (ctx) {
+        ctx.telegram.sendAudio(ctx.scene.state.partnerId, ctx.message.document);
+    });
+    chatScene.on('photo', function (ctx) {
+        ctx.telegram.sendAudio(ctx.scene.state.partnerId, ctx.message.photo);
+    });
+    chatScene.on('sticker', function (ctx) {
+        ctx.telegram.sendAudio(ctx.scene.state.partnerId, ctx.message.sticker);
+    });
+    chatScene.on('video', function (ctx) {
+        ctx.telegram.sendAudio(ctx.scene.state.partnerId, ctx.message.video);
+    });
+    chatScene.on('voice', function (ctx) {
+        ctx.telegram.sendAudio(ctx.scene.state.partnerId, ctx.message.voice);
     });
 });
 //# sourceMappingURL=commands.js.map
