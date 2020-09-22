@@ -54,7 +54,7 @@ export default (bot) => {
         ctx.reply("You aren't in a chat");
     });
     bot.on('text', async (ctx) => {
-        let match: MatchedUsers = await DataBaseManger.getMatchedUser(ctx.chat.id);
+        let match: MatchedUsers = await DataBaseManger.getMatchedUsers(ctx.chat.id);
         if (match) {
             await ctx.telegram.sendMessage(match.firstUserId, ctx.message.text)
             await ctx.scene.enter('chatRoom', {partnerId: match.firstUserId});

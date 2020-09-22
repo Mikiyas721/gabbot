@@ -61,7 +61,7 @@ export default {
 
     /** MatchedUsers **/
 
-    async getMatchedUser(userId: number): Promise<MatchedUsers> {
+    async getMatchedUsers(userId: number): Promise<MatchedUsers> {
         const database = await setUpDatabaseConnection();
         const matchedJson = await database.collection('matchedUsers').findOne({$or:[{firstUserId: userId},{secondUserId: userId}]});
         return MatchedUsers.fromJson(matchedJson);

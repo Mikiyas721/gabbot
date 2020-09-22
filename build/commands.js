@@ -121,7 +121,7 @@ exports.default = (function (bot) {
         var match;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, databaseManager_1.default.getMatchedUser(ctx.chat.id)];
+                case 0: return [4 /*yield*/, databaseManager_1.default.getMatchedUsers(ctx.chat.id)];
                 case 1:
                     match = _a.sent();
                     if (!match) return [3 /*break*/, 5];

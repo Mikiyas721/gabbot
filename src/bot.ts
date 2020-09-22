@@ -12,15 +12,16 @@ import chatScene from "./chatScene";
 const bot = new Telegraf(config.BOT_TOKEN);
 const chatRoom = new Scene('chatRoom');
 const stage = new Stage();
+const session = Session()
 
 stage.register(chatRoom);
 
-bot.use(Session());
+bot.use(session);
 bot.use(stage.middleware());
 
 command(bot);
 hears(bot);
 callBack(bot);
-chatScene(chatRoom);
+chatScene(chatRoom, session);
 
 bot.launch();

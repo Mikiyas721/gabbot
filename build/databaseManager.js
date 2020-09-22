@@ -169,7 +169,7 @@ exports.default = {
         });
     },
     /** MatchedUsers **/
-    getMatchedUser: function (userId) {
+    getMatchedUsers: function (userId) {
         return __awaiter(this, void 0, void 0, function () {
             var database, matchedJson;
             return __generator(this, function (_a) {

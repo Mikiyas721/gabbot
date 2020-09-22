@@ -12,12 +12,13 @@ var chatScene_1 = require("./chatScene");
 var bot = new telegraf_1.default(config_1.default.BOT_TOKEN);
 var chatRoom = new Scene('chatRoom');
 var stage = new Stage();
+var session = Session();
 stage.register(chatRoom);
-bot.use(Session());
+bot.use(session);
 bot.use(stage.middleware());
 commands_1.default(bot);
 hears_1.default(bot);
 callbackQueryHandler_1.default(bot);
-chatScene_1.default(chatRoom);
+chatScene_1.default(chatRoom, session);
 bot.launch();
 //# sourceMappingURL=bot.js.map
