@@ -34,27 +34,27 @@ export default (chatRoom: Scene) => {
     });
     chatRoom.on('audio', async (ctx) => {
         const hasLeft = await hasPartnerLeft(ctx);
-        if (!hasLeft) await ctx.telegram.sendAudio(ctx.scene.state.partnerId, ctx.message.file_id);
+        if (!hasLeft) await ctx.telegram.sendAudio(ctx.scene.state.partnerId, ctx.message.audio.file_id);
     });
     chatRoom.on('document', async (ctx) => {
         const hasLeft = await hasPartnerLeft(ctx);
-        if (!hasLeft) await ctx.telegram.sendDocument(ctx.scene.state.partnerId, ctx.message.file_id);
+        if (!hasLeft) await ctx.telegram.sendDocument(ctx.scene.state.partnerId, ctx.message.document.file_id);
     });
     chatRoom.on('photo', async (ctx) => {
         const hasLeft = await hasPartnerLeft(ctx);
-        if (!hasLeft) await ctx.telegram.sendPhoto(ctx.scene.state.partnerId, ctx.message.file_id);
+        if (!hasLeft) await ctx.telegram.sendPhoto(ctx.scene.state.partnerId, ctx.message.photo[0].file_id);
     });
     chatRoom.on('sticker', async (ctx) => {
         const hasLeft = await hasPartnerLeft(ctx);
-        if (!hasLeft) await ctx.telegram.sendSticker(ctx.scene.state.partnerId, ctx.message.file_id);
+        if (!hasLeft) await ctx.telegram.sendSticker(ctx.scene.state.partnerId, ctx.message.sticker.file_id);
     });
     chatRoom.on('video', async (ctx) => {
         const hasLeft = await hasPartnerLeft(ctx);
-        if (!hasLeft) await ctx.telegram.sendVideo(ctx.scene.state.partnerId, ctx.message.file_id);
+        if (!hasLeft) await ctx.telegram.sendVideo(ctx.scene.state.partnerId, ctx.message.video.file_id);
     });
     chatRoom.on('voice', async (ctx) => {
         const hasLeft = await hasPartnerLeft(ctx);
-        if (!hasLeft) await ctx.telegram.sendVoice(ctx.scene.state.partnerId, ctx.message.file_id);
+        if (!hasLeft) await ctx.telegram.sendVoice(ctx.scene.state.partnerId, ctx.message.voice.file_id);
     });
 
     const hasPartnerLeft = async (ctx): Promise<boolean> => {

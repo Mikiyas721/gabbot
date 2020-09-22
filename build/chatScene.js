@@ -104,7 +104,7 @@ exports.default = (function (chatRoom) {
                 case 1:
                     hasLeft = _a.sent();
                     if (!!hasLeft) return [3 /*break*/, 3];
-                    return [4 /*yield*/, ctx.telegram.sendAudio(ctx.scene.state.partnerId, ctx.message.file_id)];
+                    return [4 /*yield*/, ctx.telegram.sendAudio(ctx.scene.state.partnerId, ctx.message.audio.file_id)];
                 case 2:
                     _a.sent();
                     _a.label = 3;
@@ -120,7 +120,7 @@ exports.default = (function (chatRoom) {
                 case 1:
                     hasLeft = _a.sent();
                     if (!!hasLeft) return [3 /*break*/, 3];
-                    return [4 /*yield*/, ctx.telegram.sendDocument(ctx.scene.state.partnerId, ctx.message.file_id)];
+                    return [4 /*yield*/, ctx.telegram.sendDocument(ctx.scene.state.partnerId, ctx.message.document.file_id)];
                 case 2:
                     _a.sent();
                     _a.label = 3;
@@ -136,7 +136,7 @@ exports.default = (function (chatRoom) {
                 case 1:
                     hasLeft = _a.sent();
                     if (!!hasLeft) return [3 /*break*/, 3];
-                    return [4 /*yield*/, ctx.telegram.sendPhoto(ctx.scene.state.partnerId, ctx.message.file_id)];
+                    return [4 /*yield*/, ctx.telegram.sendPhoto(ctx.scene.state.partnerId, ctx.message.photo[0].file_id)];
                 case 2:
                     _a.sent();
                     _a.label = 3;
@@ -152,7 +152,7 @@ exports.default = (function (chatRoom) {
                 case 1:
                     hasLeft = _a.sent();
                     if (!!hasLeft) return [3 /*break*/, 3];
-                    return [4 /*yield*/, ctx.telegram.sendSticker(ctx.scene.state.partnerId, ctx.message.file_id)];
+                    return [4 /*yield*/, ctx.telegram.sendSticker(ctx.scene.state.partnerId, ctx.message.sticker.file_id)];
                 case 2:
                     _a.sent();
                     _a.label = 3;
@@ -168,7 +168,7 @@ exports.default = (function (chatRoom) {
                 case 1:
                     hasLeft = _a.sent();
                     if (!!hasLeft) return [3 /*break*/, 3];
-                    return [4 /*yield*/, ctx.telegram.sendVideo(ctx.scene.state.partnerId, ctx.message.file_id)];
+                    return [4 /*yield*/, ctx.telegram.sendVideo(ctx.scene.state.partnerId, ctx.message.video.file_id)];
                 case 2:
                     _a.sent();
                     _a.label = 3;
@@ -184,7 +184,7 @@ exports.default = (function (chatRoom) {
                 case 1:
                     hasLeft = _a.sent();
                     if (!!hasLeft) return [3 /*break*/, 3];
-                    return [4 /*yield*/, ctx.telegram.sendVoice(ctx.scene.state.partnerId, ctx.message.file_id)];
+                    return [4 /*yield*/, ctx.telegram.sendVoice(ctx.scene.state.partnerId, ctx.message.voice.file_id)];
                 case 2:
                     _a.sent();
                     _a.label = 3;
