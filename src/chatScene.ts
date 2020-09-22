@@ -1,32 +1,68 @@
 import * as Scene from 'telegraf/scenes/base';
 import * as Session from 'telegraf/session';
+import DataBaseManager from './databaseManager';
+import MatchedUsers from "./model/matchedUsers";
+import {onBegin, onHelp, onSetUp} from './commands';
 
 export default (chatRoom: Scene) => {
-    chatRoom.on('text', (ctx) => {
+    chatRoom.on('text', async (ctx) => {
+        const hasLeft = await hasPartnerLeft(ctx);
         if (ctx.message.text == "/end") {
-            ctx.reply('Chat ended.');
-            ctx.telegram.sendMessage(ctx.scene.state.partnerId, 'Your partner has left the chat 😌. Press /begin to start looking for a partner again.');
-            ctx.scene.leave();
+            if (hasLeft) {
+                ctx.reply("You aren't in a chat");
+            } else {
+                ctx.reply('Chat ended.');
+                await ctx.telegram.sendMessage(ctx.scene.state.partnerId, 'Your partner has left the chat 😌. Press /begin to start looking for a partner again.');
+                await DataBaseManager.updateMatched(new MatchedUsers(ctx.scene.state.partnerId, ctx.chat.id, true));
+                await ctx.scene.leave();
+            }
+        } else if (ctx.message.text == "/begin") {
+            if (hasLeft) {
+                await onBegin(ctx);
+            } else {
+                ctx.reply('You are in a chat. Please first end this chat, if you want to start looking for another partner')
+            }
+        } else if (ctx.message.text == "/help") {
+            onHelp(ctx);
+        } else if (ctx.message.text == "/setup") {
+            if (hasLeft) onSetUp(ctx);
+            else ctx.reply("You can't setup your preference while you are in a chat.")
         } else {
-            ctx.telegram.sendMessage(ctx.scene.state.partnerId, `${ctx.message.text}`);
+            if (!hasLeft)
+                await ctx.telegram.sendMessage(ctx.scene.state.partnerId, `${ctx.message.text}`);
         }
     });
-    chatRoom.on('audio', (ctx) => {
-        ctx.telegram.sendAudio(ctx.scene.state.partnerId, ctx.message.audio);
+    chatRoom.on('audio', async (ctx) => {
+        const hasLeft = await hasPartnerLeft(ctx);
+        if (!hasLeft) await ctx.telegram.sendAudio(ctx.scene.state.partnerId, ctx.message.file_id);
     });
-    chatRoom.on('document', (ctx) => {
-        ctx.telegram.sendDocument(ctx.scene.state.partnerId, ctx.message.document);
+    chatRoom.on('document', async (ctx) => {
+        const hasLeft = await hasPartnerLeft(ctx);
+        if (!hasLeft) await ctx.telegram.sendDocument(ctx.scene.state.partnerId, ctx.message.file_id);
     });
-    chatRoom.on('photo', (ctx) => {
-        ctx.telegram.sendPhoto(ctx.scene.state.partnerId, ctx.message.photo);
+    chatRoom.on('photo', async (ctx) => {
+        const hasLeft = await hasPartnerLeft(ctx);
+        if (!hasLeft) await ctx.telegram.sendPhoto(ctx.scene.state.partnerId, ctx.message.file_id);
     });
-    chatRoom.on('sticker', (ctx) => {
-        ctx.telegram.sendSticker(ctx.scene.state.partnerId, ctx.message.sticker);
+    chatRoom.on('sticker', async (ctx) => {
+        const hasLeft = await hasPartnerLeft(ctx);
+        if (!hasLeft) await ctx.telegram.sendSticker(ctx.scene.state.partnerId, ctx.message.file_id);
     });
-    chatRoom.on('video', (ctx) => {
-        ctx.telegram.sendVideo(ctx.scene.state.partnerId, ctx.message.video);
+    chatRoom.on('video', async (ctx) => {
+        const hasLeft = await hasPartnerLeft(ctx);
+        if (!hasLeft) await ctx.telegram.sendVideo(ctx.scene.state.partnerId, ctx.message.file_id);
     });
-    chatRoom.on('voice', (ctx) => {
-        ctx.telegram.sendAudio(ctx.scene.state.partnerId, ctx.message.voice);
+    chatRoom.on('voice', async (ctx) => {
+        const hasLeft = await hasPartnerLeft(ctx);
+        if (!hasLeft) await ctx.telegram.sendVoice(ctx.scene.state.partnerId, ctx.message.file_id);
     });
+
+    const hasPartnerLeft = async (ctx): Promise<boolean> => {
+        const hasLeft = await DataBaseManager.hasPartnerLeft(new MatchedUsers(ctx.chat.id, ctx.scene.state.partnerId));
+        if (hasLeft) {
+            await ctx.scene.leave();
+            await DataBaseManager.deleteMatchedUsers(ctx.chat.id);
+        }
+        return hasLeft;
+    }
 }

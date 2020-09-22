@@ -59,58 +59,30 @@ function getRandomPartner(user) {
     });
 }
 exports.default = (function (bot) {
-    bot.start(function (ctx) {
-        setDefault(ctx);
-        ctx.reply('Welcome');
-    });
-    bot.command('help', function (ctx) {
-        var message = '*Command Reference*\n/begin - Begin looking for partner\n/end - End Chat\n/help - Command reference\n/setup - Setup preference\n/start - Start Bot';
-        ctx.telegram.sendMessage(ctx.chat.id, message, { parse_mode: "Markdown" });
-    });
-    bot.command('setup', function (ctx) {
-        ctx.reply('Please fill in your information and the preference for your potential partner.', {
-            reply_markup: {
-                keyboard: [
-                    [{ text: 'Your Sex' }, { text: "Partner's Sex" }]
-                ], resize_keyboard: true
-            }
-        });
-    });
-    bot.command('begin', function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
-        var user, partnerId;
+    bot.start(function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, databaseManager_1.default.getUserFromDatabase(ctx.chat.id)];
+                case 0: return [4 /*yield*/, setDefault(ctx)];
                 case 1:
-                    user = _a.sent();
-                    return [4 /*yield*/, getRandomPartner(user)];
-                case 2:
-                    partnerId = _a.sent();
-                    if (!partnerId) return [3 /*break*/, 8];
-                    return [4 /*yield*/, databaseManager_1.default.registerMatchedUsers(new matchedUsers_1.default(ctx.chat.id, partnerId))];
-                case 3:
                     _a.sent();
-                    return [4 /*yield*/, databaseManager_1.default.deleteUserFromDatabase(true, partnerId)];
-                case 4:
+                    ctx.reply('Welcome');
+                    return [2 /*return*/];
+            }
+        });
+    }); });
+    bot.command('help', function (ctx) {
+        exports.onHelp(ctx);
+    });
+    bot.command('setup', function (ctx) {
+        exports.onSetUp(ctx);
+    });
+    bot.command('begin', function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, exports.onBegin(ctx)];
+                case 1:
                     _a.sent();
-                    return [4 /*yield*/, ctx.scene.enter('chatRoom', { partnerId: partnerId })];
-                case 5:
-                    _a.sent();
-                    return [4 /*yield*/, ctx.reply('Your partner is here 😊. Have a nice chat')];
-                case 6:
-                    _a.sent();
-                    return [4 /*yield*/, ctx.telegram.sendMessage(partnerId, "Your partner is here \uD83D\uDE0A. Have a nice chat.")];
-                case 7:
-                    _a.sent();
-                    return [3 /*break*/, 11];
-                case 8: return [4 /*yield*/, ctx.reply("Unfortunately, I couldn't find a partner now 😔.I will keep searching and match you as soon as possible 🙂")];
-                case 9:
-                    _a.sent();
-                    return [4 /*yield*/, databaseManager_1.default.addUserToDatabase(true, user)];
-                case 10:
-                    _a.sent();
-                    _a.label = 11;
-                case 11: return [2 /*return*/];
+                    return [2 /*return*/];
             }
         });
     }); });
@@ -118,28 +90,27 @@ exports.default = (function (bot) {
         ctx.reply("You aren't in a chat");
     });
     bot.on('text', function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
-        var match;
+        var myId, match;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, databaseManager_1.default.getMatchedUsers(ctx.chat.id)];
+                case 0:
+                    myId = ctx.chat.id;
+                    return [4 /*yield*/, databaseManager_1.default.getMatchedUsers(myId)];
                 case 1:
                     match = _a.sent();
-                    if (!match) return [3 /*break*/, 5];
-                    return [4 /*yield*/, ctx.telegram.sendMessage(match.firstUserId, ctx.message.text)];
+                    if (!match) return [3 /*break*/, 4];
+                    return [4 /*yield*/, ctx.telegram.sendMessage(match.getOpponentId(myId), ctx.message.text)];
                 case 2:
                     _a.sent();
-                    return [4 /*yield*/, ctx.scene.enter('chatRoom', { partnerId: match.firstUserId })];
+                    return [4 /*yield*/, ctx.scene.enter('chatRoom', { partnerId: match.getOpponentId(myId) })];
                 case 3:
                     _a.sent();
-                    return [4 /*yield*/, databaseManager_1.default.deleteMatchedUsers(match.firstUserId)];
-                case 4:
+                    return [3 /*break*/, 6];
+                case 4: return [4 /*yield*/, ctx.reply("You aren't in a chat")];
+                case 5:
                     _a.sent();
-                    return [3 /*break*/, 7];
-                case 5: return [4 /*yield*/, ctx.reply("You aren't in a chat")];
-                case 6:
-                    _a.sent();
-                    _a.label = 7;
-                case 7: return [2 /*return*/];
+                    _a.label = 6;
+                case 6: return [2 /*return*/];
             }
         });
     }); });
@@ -160,4 +131,55 @@ exports.default = (function (bot) {
         });
     }); };
 });
+exports.onBegin = function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
+    var user, partnerId;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, databaseManager_1.default.getUserFromDatabase(ctx.chat.id)];
+            case 1:
+                user = _a.sent();
+                return [4 /*yield*/, getRandomPartner(user)];
+            case 2:
+                partnerId = _a.sent();
+                if (!partnerId) return [3 /*break*/, 8];
+                return [4 /*yield*/, databaseManager_1.default.registerMatchedUsers(new matchedUsers_1.default(ctx.chat.id, partnerId))];
+            case 3:
+                _a.sent();
+                return [4 /*yield*/, databaseManager_1.default.deleteUserFromDatabase(true, partnerId)];
+            case 4:
+                _a.sent();
+                return [4 /*yield*/, ctx.scene.enter('chatRoom', { partnerId: partnerId })];
+            case 5:
+                _a.sent();
+                return [4 /*yield*/, ctx.reply('Your partner is here 😊. Have a nice chat')];
+            case 6:
+                _a.sent();
+                return [4 /*yield*/, ctx.telegram.sendMessage(partnerId, "Your partner is here \uD83D\uDE0A. Have a nice chat.")];
+            case 7:
+                _a.sent();
+                return [3 /*break*/, 11];
+            case 8: return [4 /*yield*/, ctx.reply("Unfortunately, I couldn't find a partner now 😔.I will keep searching and match you as soon as possible 🙂")];
+            case 9:
+                _a.sent();
+                return [4 /*yield*/, databaseManager_1.default.addUserToDatabase(true, user)];
+            case 10:
+                _a.sent();
+                _a.label = 11;
+            case 11: return [2 /*return*/];
+        }
+    });
+}); };
+exports.onHelp = function (ctx) {
+    var message = '*Command Reference*\n/begin - Begin looking for partner\n/end - End Chat\n/help - Command reference\n/setup - Setup preference\n/start - Start Bot';
+    ctx.telegram.sendMessage(ctx.chat.id, message, { parse_mode: "Markdown" });
+};
+exports.onSetUp = function (ctx) {
+    ctx.reply('Please fill in your information and the preference for your potential partner.', {
+        reply_markup: {
+            keyboard: [
+                [{ text: 'Your Sex' }, { text: "Partner's Sex" }]
+            ], resize_keyboard: true
+        }
+    });
+};
 //# sourceMappingURL=commands.js.map

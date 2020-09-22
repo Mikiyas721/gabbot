@@ -19,6 +19,6 @@ bot.use(stage.middleware());
 commands_1.default(bot);
 hears_1.default(bot);
 callbackQueryHandler_1.default(bot);
-chatScene_1.default(chatRoom, session);
+chatScene_1.default(chatRoom);
 bot.launch();
 //# sourceMappingURL=bot.js.map

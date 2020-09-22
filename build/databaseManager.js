@@ -177,7 +177,7 @@ exports.default = {
                     case 0: return [4 /*yield*/, setUpDatabaseConnection()];
                     case 1:
                         database = _a.sent();
-                        return [4 /*yield*/, database.collection('matchedUsers').findOne({ $or: [{ firstUserId: userId }, { secondUserId: userId }] })];
+                        return [4 /*yield*/, database.collection('matchedUsers').findOne({ $or: [{ userOneId: userId }, { userTwoId: userId }] })];
                     case 2:
                         matchedJson = _a.sent();
                         return [2 /*return*/, matchedUsers_1.default.fromJson(matchedJson)];
@@ -204,7 +204,7 @@ exports.default = {
             });
         });
     },
-    updateMatched: function (confirm) {
+    updateMatched: function (matched) {
         return __awaiter(this, void 0, void 0, function () {
             var database;
             return __generator(this, function (_a) {
@@ -212,10 +212,11 @@ exports.default = {
                     case 0: return [4 /*yield*/, setUpDatabaseConnection()];
                     case 1:
                         database = _a.sent();
-                        database.collection('matchedUsers').updateOne({ firstUserId: confirm.firstUserId }, {
+                        database.collection('matchedUsers').updateOne({ $or: [{ userOneId: matched.userOneId }, { userOneId: matched.userTwoId }] }, {
                             $set: {
-                                firstUserId: confirm.firstUserId,
-                                secondUserId: confirm.secondUserId,
+                                userOneId: matched.userOneId,
+                                userTwoId: matched.userTwoId,
+                                partnerHasLeft: matched.partnerHasLeft
                             }
                         }, function (error, response) {
                             if (error)
@@ -226,7 +227,7 @@ exports.default = {
             });
         });
     },
-    deleteMatchedUsers: function (firstUserId) {
+    deleteMatchedUsers: function (userOneId) {
         return __awaiter(this, void 0, void 0, function () {
             var database;
             return __generator(this, function (_a) {
@@ -234,7 +235,7 @@ exports.default = {
                     case 0: return [4 /*yield*/, setUpDatabaseConnection()];
                     case 1:
                         database = _a.sent();
-                        return [4 /*yield*/, database.collection('matchedUsers').deleteOne({ firstUserId: firstUserId }, function (error, response) {
+                        return [4 /*yield*/, database.collection('matchedUsers').deleteOne({ $or: [{ userOneId: userOneId }, { userTwoId: userOneId }] }, function (error, response) {
                                 if (error)
                                     throw error;
                             })];
@@ -245,5 +246,21 @@ exports.default = {
             });
         });
     },
+    hasPartnerLeft: function (matched) {
+        return __awaiter(this, void 0, void 0, function () {
+            var database, json;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, setUpDatabaseConnection()];
+                    case 1:
+                        database = _a.sent();
+                        return [4 /*yield*/, database.collection('matchedUsers').findOne({ $or: [{ userOneId: matched.userOneId }, { userOneId: matched.userTwoId }] })];
+                    case 2:
+                        json = _a.sent();
+                        return [2 /*return*/, json.partnerHasLeft];
+                }
+            });
+        });
+    }
 };
 //# sourceMappingURL=databaseManager.js.map

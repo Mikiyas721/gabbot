@@ -22,6 +22,6 @@ bot.use(stage.middleware());
 command(bot);
 hears(bot);
 callBack(bot);
-chatScene(chatRoom, session);
+chatScene(chatRoom);
 
 bot.launch();
