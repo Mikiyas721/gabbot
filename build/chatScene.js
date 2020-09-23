@@ -39,7 +39,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var databaseManager_1 = require("./databaseManager");
 var matchedUsers_1 = require("./model/matchedUsers");
 var commands_1 = require("./commands");
-exports.default = (function (chatRoom, session) {
+exports.default = (function (chatRoom) {
     chatRoom.on('text', function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
         var hasLeft;
         return __generator(this, function (_a) {

@@ -8,14 +8,14 @@ export default (bot) => {
             reply_markup: {
                 keyboard: [
                     [
-                        {text: 'Male'},
-                        {text: 'Female'}
+                        {text: 'Male 👨'},
+                        {text: 'Female 👩'}
                     ], [{text: 'Unspecified'}]
                 ], resize_keyboard: true
             }
         });
     });
-    bot.hears('Male', (ctx) => {
+    bot.hears('Male 👨', (ctx) => {
         DataBaseManager.updateUserData(new User(ctx.message.chat.id, null, null, Sex.MALE));
         ctx.reply('Your Sex has been set to Male', {
             reply_markup: {
@@ -31,7 +31,7 @@ export default (bot) => {
             }
         });
     });
-    bot.hears('Female', (ctx) => {
+    bot.hears('Female 👩', (ctx) => {
         DataBaseManager.updateUserData(new User(ctx.message.chat.id, null, null, Sex.FEMALE));
         ctx.reply('Your Sex has been set to Female', {
             reply_markup: {
@@ -69,8 +69,8 @@ export default (bot) => {
             reply_markup: {
                 keyboard: [
                     [
-                        {text: 'MALE'},
-                        {text: 'FEMALE'}
+                        {text: 'MALE 👨'},
+                        {text: 'FEMALE 👩'}
                     ],
                     [
                         {text: 'UNSPECIFIED'}
@@ -79,7 +79,7 @@ export default (bot) => {
             }
         });
     });
-    bot.hears('MALE', (ctx) => {
+    bot.hears('MALE 👨', (ctx) => {
         DataBaseManager.updateUserData(new User(ctx.message.chat.id, null, null, null,Sex.MALE));
         ctx.reply("Your partner's sex has been set to male", {
             reply_markup: {
@@ -95,7 +95,7 @@ export default (bot) => {
             }
         });
     });
-    bot.hears('FEMALE', (ctx) => {
+    bot.hears('FEMALE 👩', (ctx) => {
         DataBaseManager.updateUserData(new User(ctx.message.chat.id, null, null, null, Sex.FEMALE));
         ctx.reply("Your partner's sex has been set to female", {
             reply_markup: {
@@ -129,7 +129,7 @@ export default (bot) => {
     });
 
     bot.hears('Done', (ctx) => {
-        ctx.reply('Setup Complete', {
+        ctx.reply('Setup Complete 🤗', {
             reply_markup: {
                 remove_keyboard: true
             }

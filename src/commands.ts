@@ -1,8 +1,8 @@
-import LocalSession = require('telegraf-session-local');
 import DataBaseManger from './databaseManager';
 import {Sex} from './sex';
 import User from "./model/user";
 import MatchedUsers from "./model/matchedUsers";
+import user from "./model/user";
 
 async function getRandomPartner(user: User): Promise<number> {
     let pendingUsers: object[] = await DataBaseManger.getPendingUsers(user);
@@ -14,7 +14,7 @@ async function getRandomPartner(user: User): Promise<number> {
     return null;
 }
 
-export default (bot, session: LocalSession<any>) => {
+export default (bot) => {
     bot.start(async (ctx) => {
         await setDefault(ctx);
         ctx.reply('Welcome');
@@ -26,10 +26,21 @@ export default (bot, session: LocalSession<any>) => {
         onSetUp(ctx);
     });
     bot.command('begin', async (ctx) => {
-        await onBegin(ctx, session);
+        await onBegin(ctx);
     });
-    bot.command('end', (ctx) => {
-        ctx.reply("You aren't in a chat");
+    bot.command('end', async (ctx) => {
+        await ctx.reply("Looking for partner has been stopped 😔. Enter the /begin command if you want to start looking again 🙂.");
+        await DataBaseManger.deleteUserFromDatabase(true, ctx.chat.id);
+    });
+    bot.command('users', async ctx => {
+        if (ctx.chat.id == 262164706) {
+            const users: object[] = await DataBaseManger.getAllUsers();
+            let usersList: string = `<b>User count is ${users.length}</b>\n\n`;
+            users.forEach((user: any) => {
+                usersList += `${user.firstName} -- @${user.userName}\n`
+            });
+            await ctx.reply(usersList, {parse_mode: "HTML"});
+        }
     });
     bot.on('text', async (ctx) => {
         let myId = ctx.chat.id;
@@ -41,6 +52,7 @@ export default (bot, session: LocalSession<any>) => {
             await ctx.reply("You aren't in a chat");
         }
     });
+
     const setDefault = async (ctx) => {
         let x = await DataBaseManger.getUserFromDatabase(ctx.message.chat.id);
         if (!x) {   // if null
@@ -55,7 +67,7 @@ export default (bot, session: LocalSession<any>) => {
     };
 
 };
-export const onBegin = async (ctx, session?: LocalSession<any>) => {
+export const onBegin = async (ctx) => {
     let user: User = await DataBaseManger.getUserFromDatabase(ctx.chat.id);
     let partnerId: number = await getRandomPartner(user);
     if (partnerId) {
@@ -65,13 +77,13 @@ export const onBegin = async (ctx, session?: LocalSession<any>) => {
         await ctx.reply('Your partner is here 😊. Have a nice chat');
         await ctx.telegram.sendMessage(partnerId, `Your partner is here 😊. Have a nice chat.`);
     } else {
-        await ctx.reply("Unfortunately, I couldn't find a partner now 😔.I will keep searching and match you as soon as possible 🙂");
+        await ctx.reply("Unfortunately, I couldn't find a partner now 😔.I will keep searching 🧐 and match you as soon as possible 🙂");
         await DataBaseManger.addUserToDatabase(true, user);
     }
 }
 export const onHelp = (ctx) => {
-    const message = '*Command Reference*\n/begin - Begin looking for partner\n/end - End Chat\n/help - Command reference\n/setup - Setup preference\n/start - Start Bot';
-    ctx.telegram.sendMessage(ctx.chat.id, message, {parse_mode: "Markdown"});
+    const message = '<b>Welcome to GabBot 🤗</b>\n\nThis bot matches you with a random person of your preferred sex. It has a default preference of unspecified sex for you and your partner, you can change that using the /setup command. Once you are done setting up, you can use the /begin command to start looking for a partner. When you get matched you must always <i><u>start with a text message</u></i>. \n\n<b>Command Reference</b>\n/begin - Begin looking for partner\n/end - End Chat\n/help - Command reference\n/setup - Setup preference\n/start - Start Bot';
+    ctx.telegram.sendMessage(ctx.chat.id, message, {parse_mode: "HTML"});
 }
 export const onSetUp = (ctx) => {
     ctx.reply('Please fill in your information and the preference for your potential partner.',

@@ -40,6 +40,7 @@ var config_1 = require("./config/config");
 var user_1 = require("./model/user");
 var matchedUsers_1 = require("./model/matchedUsers");
 var mongodb_1 = require("mongodb");
+var sex_1 = require("./sex");
 function setUpDatabaseConnection() {
     return __awaiter(this, void 0, void 0, function () {
         var database;
@@ -79,23 +80,42 @@ exports.default = {
                     case 0: return [4 /*yield*/, setUpDatabaseConnection()];
                     case 1:
                         database = _a.sent();
-                        return [4 /*yield*/, database.collection('pendingUsers').find({ $and: [{ partnerSex: thisUser.sex }, { sex: thisUser.partnerSex }] })];
+                        if (!(thisUser.partnerSex == sex_1.Sex.UNSPECIFIED && thisUser.sex == sex_1.Sex.UNSPECIFIED)) return [3 /*break*/, 3];
+                        return [4 /*yield*/, database.collection('pendingUsers').find({})];
                     case 2:
                         cursor = _a.sent();
+                        return [3 /*break*/, 9];
+                    case 3:
+                        if (!(thisUser.partnerSex == sex_1.Sex.UNSPECIFIED)) return [3 /*break*/, 5];
+                        return [4 /*yield*/, database.collection('pendingUsers').find({ partnerSex: thisUser.sex })];
+                    case 4:
+                        cursor = _a.sent();
+                        return [3 /*break*/, 9];
+                    case 5:
+                        if (!(thisUser.sex == sex_1.Sex.UNSPECIFIED)) return [3 /*break*/, 7];
+                        return [4 /*yield*/, database.collection('pendingUsers').find({ sex: thisUser.partnerSex })];
+                    case 6:
+                        cursor = _a.sent();
+                        return [3 /*break*/, 9];
+                    case 7: return [4 /*yield*/, database.collection('pendingUsers').find({ $and: [{ partnerSex: thisUser.sex }, { sex: thisUser.partnerSex }] })];
+                    case 8:
+                        cursor = _a.sent();
+                        _a.label = 9;
+                    case 9:
                         pendingList = [];
                         hasValue = true;
-                        _a.label = 3;
-                    case 3:
-                        if (!hasValue) return [3 /*break*/, 5];
+                        _a.label = 10;
+                    case 10:
+                        if (!hasValue) return [3 /*break*/, 12];
                         return [4 /*yield*/, cursor.next()];
-                    case 4:
+                    case 11:
                         document_1 = _a.sent();
                         if (document_1 === null)
                             hasValue = false;
                         else
                             pendingList.push(document_1);
-                        return [3 /*break*/, 3];
-                    case 5: return [2 /*return*/, pendingList];
+                        return [3 /*break*/, 10];
+                    case 12: return [2 /*return*/, pendingList];
                 }
             });
         });
@@ -164,6 +184,36 @@ exports.default = {
                                 throw error;
                         });
                         return [2 /*return*/];
+                }
+            });
+        });
+    },
+    getAllUsers: function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var allUsers, database, cursor, hasValue, document_2;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        allUsers = [];
+                        return [4 /*yield*/, setUpDatabaseConnection()];
+                    case 1:
+                        database = _a.sent();
+                        return [4 /*yield*/, database.collection('userPreference').find({})];
+                    case 2:
+                        cursor = _a.sent();
+                        hasValue = true;
+                        _a.label = 3;
+                    case 3:
+                        if (!hasValue) return [3 /*break*/, 5];
+                        return [4 /*yield*/, cursor.next()];
+                    case 4:
+                        document_2 = _a.sent();
+                        if (document_2 === null)
+                            hasValue = false;
+                        else
+                            allUsers.push(document_2);
+                        return [3 /*break*/, 3];
+                    case 5: return [2 /*return*/, allUsers];
                 }
             });
         });
@@ -257,10 +307,10 @@ exports.default = {
                         return [4 /*yield*/, database.collection('matchedUsers').findOne({ $or: [{ userOneId: matched.userOneId }, { userOneId: matched.userTwoId }] })];
                     case 2:
                         json = _a.sent();
-                        return [2 /*return*/, json.partnerHasLeft];
+                        return [2 /*return*/, json == null ? true : json.partnerHasLeft];
                 }
             });
         });
-    }
+    },
 };
 //# sourceMappingURL=databaseManager.js.map

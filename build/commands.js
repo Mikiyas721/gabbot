@@ -58,7 +58,7 @@ function getRandomPartner(user) {
         });
     });
 }
-exports.default = (function (bot, session) {
+exports.default = (function (bot) {
     bot.start(function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -79,16 +79,47 @@ exports.default = (function (bot, session) {
     bot.command('begin', function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, exports.onBegin(ctx, session)];
+                case 0: return [4 /*yield*/, exports.onBegin(ctx)];
                 case 1:
                     _a.sent();
                     return [2 /*return*/];
             }
         });
     }); });
-    bot.command('end', function (ctx) {
-        ctx.reply("You aren't in a chat");
-    });
+    bot.command('end', function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, ctx.reply("Looking for partner has been stopped 😔. Enter the /begin command if you want to start looking again 🙂.")];
+                case 1:
+                    _a.sent();
+                    return [4 /*yield*/, databaseManager_1.default.deleteUserFromDatabase(true, ctx.chat.id)];
+                case 2:
+                    _a.sent();
+                    return [2 /*return*/];
+            }
+        });
+    }); });
+    bot.command('users', function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
+        var users, usersList_1;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    if (!(ctx.chat.id == 262164706)) return [3 /*break*/, 3];
+                    return [4 /*yield*/, databaseManager_1.default.getAllUsers()];
+                case 1:
+                    users = _a.sent();
+                    usersList_1 = "<b>User count is " + users.length + "</b>\n\n";
+                    users.forEach(function (user) {
+                        usersList_1 += user.firstName + " -- @" + user.userName + "\n";
+                    });
+                    return [4 /*yield*/, ctx.reply(usersList_1, { parse_mode: "HTML" })];
+                case 2:
+                    _a.sent();
+                    _a.label = 3;
+                case 3: return [2 /*return*/];
+            }
+        });
+    }); });
     bot.on('text', function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
         var myId, match;
         return __generator(this, function (_a) {
@@ -131,7 +162,7 @@ exports.default = (function (bot, session) {
         });
     }); };
 });
-exports.onBegin = function (ctx, session) { return __awaiter(void 0, void 0, void 0, function () {
+exports.onBegin = function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
     var user, partnerId;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -158,7 +189,7 @@ exports.onBegin = function (ctx, session) { return __awaiter(void 0, void 0, voi
             case 7:
                 _a.sent();
                 return [3 /*break*/, 11];
-            case 8: return [4 /*yield*/, ctx.reply("Unfortunately, I couldn't find a partner now 😔.I will keep searching and match you as soon as possible 🙂")];
+            case 8: return [4 /*yield*/, ctx.reply("Unfortunately, I couldn't find a partner now 😔.I will keep searching 🧐 and match you as soon as possible 🙂")];
             case 9:
                 _a.sent();
                 return [4 /*yield*/, databaseManager_1.default.addUserToDatabase(true, user)];
@@ -170,8 +201,8 @@ exports.onBegin = function (ctx, session) { return __awaiter(void 0, void 0, voi
     });
 }); };
 exports.onHelp = function (ctx) {
-    var message = '*Command Reference*\n/begin - Begin looking for partner\n/end - End Chat\n/help - Command reference\n/setup - Setup preference\n/start - Start Bot';
-    ctx.telegram.sendMessage(ctx.chat.id, message, { parse_mode: "Markdown" });
+    var message = '<b>Welcome to GabBot 🤗</b>\n\nThis bot matches you with a random person of your preferred sex. It has a default preference of unspecified sex for you and your partner, you can change that using the /setup command. Once you are done setting up, you can use the /begin command to start looking for a partner. When you get matched you must always <i><u>start with a text message</u></i>. \n\n<b>Command Reference</b>\n/begin - Begin looking for partner\n/end - End Chat\n/help - Command reference\n/setup - Setup preference\n/start - Start Bot';
+    ctx.telegram.sendMessage(ctx.chat.id, message, { parse_mode: "HTML" });
 };
 exports.onSetUp = function (ctx) {
     ctx.reply('Please fill in your information and the preference for your potential partner.', {

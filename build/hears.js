@@ -9,14 +9,14 @@ exports.default = (function (bot) {
             reply_markup: {
                 keyboard: [
                     [
-                        { text: 'Male' },
-                        { text: 'Female' }
+                        { text: 'Male 👨' },
+                        { text: 'Female 👩' }
                     ], [{ text: 'Unspecified' }]
                 ], resize_keyboard: true
             }
         });
     });
-    bot.hears('Male', function (ctx) {
+    bot.hears('Male 👨', function (ctx) {
         databaseManager_1.default.updateUserData(new user_1.default(ctx.message.chat.id, null, null, sex_1.Sex.MALE));
         ctx.reply('Your Sex has been set to Male', {
             reply_markup: {
@@ -32,7 +32,7 @@ exports.default = (function (bot) {
             }
         });
     });
-    bot.hears('Female', function (ctx) {
+    bot.hears('Female 👩', function (ctx) {
         databaseManager_1.default.updateUserData(new user_1.default(ctx.message.chat.id, null, null, sex_1.Sex.FEMALE));
         ctx.reply('Your Sex has been set to Female', {
             reply_markup: {
@@ -69,8 +69,8 @@ exports.default = (function (bot) {
             reply_markup: {
                 keyboard: [
                     [
-                        { text: 'MALE' },
-                        { text: 'FEMALE' }
+                        { text: 'MALE 👨' },
+                        { text: 'FEMALE 👩' }
                     ],
                     [
                         { text: 'UNSPECIFIED' }
@@ -79,7 +79,7 @@ exports.default = (function (bot) {
             }
         });
     });
-    bot.hears('MALE', function (ctx) {
+    bot.hears('MALE 👨', function (ctx) {
         databaseManager_1.default.updateUserData(new user_1.default(ctx.message.chat.id, null, null, null, sex_1.Sex.MALE));
         ctx.reply("Your partner's sex has been set to male", {
             reply_markup: {
@@ -95,7 +95,7 @@ exports.default = (function (bot) {
             }
         });
     });
-    bot.hears('FEMALE', function (ctx) {
+    bot.hears('FEMALE 👩', function (ctx) {
         databaseManager_1.default.updateUserData(new user_1.default(ctx.message.chat.id, null, null, null, sex_1.Sex.FEMALE));
         ctx.reply("Your partner's sex has been set to female", {
             reply_markup: {
@@ -128,7 +128,7 @@ exports.default = (function (bot) {
         });
     });
     bot.hears('Done', function (ctx) {
-        ctx.reply('Setup Complete', {
+        ctx.reply('Setup Complete 🤗', {
             reply_markup: {
                 remove_keyboard: true
             }

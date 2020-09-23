@@ -2,6 +2,7 @@ import config from './config/config';
 import User from './model/user';
 import MatchedUsers from "./model/matchedUsers";
 import {MongoClient} from "mongodb";
+import {Sex} from "./sex";
 
 async function setUpDatabaseConnection() {
     const database = await MongoClient.connect(config.DATABASE_URL, {useUnifiedTopology: true});
@@ -16,7 +17,16 @@ export default {
     },
     async getPendingUsers(thisUser: User): Promise<object[]> {
         const database = await setUpDatabaseConnection();
-        const cursor = await database.collection('pendingUsers').find({$and: [{partnerSex: thisUser.sex}, {sex: thisUser.partnerSex}]});
+        let cursor;
+        if (thisUser.partnerSex == Sex.UNSPECIFIED && thisUser.sex == Sex.UNSPECIFIED) {
+            cursor = await database.collection('pendingUsers').find({});
+        } else if (thisUser.partnerSex == Sex.UNSPECIFIED) {
+            cursor = await database.collection('pendingUsers').find({partnerSex: thisUser.sex});
+        } else if (thisUser.sex == Sex.UNSPECIFIED) {
+            cursor = await database.collection('pendingUsers').find({sex: thisUser.partnerSex});
+        } else {
+            cursor = await database.collection('pendingUsers').find({$and: [{partnerSex: thisUser.sex}, {sex: thisUser.partnerSex}]});
+        }
         let pendingList: object[] = [];
         let hasValue = true;
         while (hasValue) {
@@ -58,6 +68,18 @@ export default {
             if (error) throw error;
         });
     },
+    async getAllUsers(): Promise<object[]> {
+        let allUsers: object[] = [];
+        const database = await setUpDatabaseConnection();
+        const cursor = await database.collection('userPreference').find({});
+        let hasValue = true;
+        while (hasValue) {
+            let document = await cursor.next();
+            if (document === null) hasValue = false;
+            else allUsers.push(document);
+        }
+        return allUsers;
+    },
 
     /** MatchedUsers **/
 
@@ -93,8 +115,7 @@ export default {
     async hasPartnerLeft(matched: MatchedUsers): Promise<boolean> {
         const database = await setUpDatabaseConnection();
         const json = await database.collection('matchedUsers').findOne({$or: [{userOneId: matched.userOneId}, {userOneId: matched.userTwoId}]});
-        return json.partnerHasLeft;
-    }
-
+        return json == null ? true : json.partnerHasLeft;
+    },
 
 }

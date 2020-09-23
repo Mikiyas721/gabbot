@@ -1,11 +1,10 @@
 import * as Scene from 'telegraf/scenes/base';
-import LocalSession = require('telegraf-session-local');
 import DataBaseManager from './databaseManager';
 import MatchedUsers from "./model/matchedUsers";
 import {onBegin, onHelp, onSetUp} from './commands';
 
 
-export default (chatRoom: Scene, session: LocalSession<any>) => {
+export default (chatRoom: Scene) => {
     chatRoom.on('text', async (ctx) => {
         const hasLeft = await hasPartnerLeft(ctx);
         if (ctx.message.text == "/end") {
