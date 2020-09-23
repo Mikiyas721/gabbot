@@ -1,3 +1,4 @@
+import LocalSession = require('telegraf-session-local');
 import DataBaseManger from './databaseManager';
 import {Sex} from './sex';
 import User from "./model/user";
@@ -13,7 +14,7 @@ async function getRandomPartner(user: User): Promise<number> {
     return null;
 }
 
-export default (bot) => {
+export default (bot, session: LocalSession<any>) => {
     bot.start(async (ctx) => {
         await setDefault(ctx);
         ctx.reply('Welcome');
@@ -25,7 +26,7 @@ export default (bot) => {
         onSetUp(ctx);
     });
     bot.command('begin', async (ctx) => {
-        await onBegin(ctx);
+        await onBegin(ctx, session);
     });
     bot.command('end', (ctx) => {
         ctx.reply("You aren't in a chat");
@@ -54,9 +55,8 @@ export default (bot) => {
     };
 
 };
-export const onBegin = async (ctx) => {
+export const onBegin = async (ctx, session?: LocalSession<any>) => {
     let user: User = await DataBaseManger.getUserFromDatabase(ctx.chat.id);
-    //TODO handle possible null Error
     let partnerId: number = await getRandomPartner(user);
     if (partnerId) {
         await DataBaseManger.registerMatchedUsers(new MatchedUsers(ctx.chat.id, partnerId));
@@ -73,7 +73,7 @@ export const onHelp = (ctx) => {
     const message = '*Command Reference*\n/begin - Begin looking for partner\n/end - End Chat\n/help - Command reference\n/setup - Setup preference\n/start - Start Bot';
     ctx.telegram.sendMessage(ctx.chat.id, message, {parse_mode: "Markdown"});
 }
-export const onSetUp = (ctx)=>{
+export const onSetUp = (ctx) => {
     ctx.reply('Please fill in your information and the preference for your potential partner.',
         {
             reply_markup:

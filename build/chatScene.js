@@ -39,7 +39,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var databaseManager_1 = require("./databaseManager");
 var matchedUsers_1 = require("./model/matchedUsers");
 var commands_1 = require("./commands");
-exports.default = (function (chatRoom) {
+exports.default = (function (chatRoom, session) {
     chatRoom.on('text', function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
         var hasLeft;
         return __generator(this, function (_a) {
@@ -63,7 +63,7 @@ exports.default = (function (chatRoom) {
                 case 5:
                     _a.sent();
                     _a.label = 6;
-                case 6: return [3 /*break*/, 15];
+                case 6: return [3 /*break*/, 17];
                 case 7:
                     if (!(ctx.message.text == "/begin")) return [3 /*break*/, 11];
                     if (!hasLeft) return [3 /*break*/, 9];
@@ -74,25 +74,29 @@ exports.default = (function (chatRoom) {
                 case 9:
                     ctx.reply('You are in a chat. Please first end this chat, if you want to start looking for another partner');
                     _a.label = 10;
-                case 10: return [3 /*break*/, 15];
+                case 10: return [3 /*break*/, 17];
                 case 11:
                     if (!(ctx.message.text == "/help")) return [3 /*break*/, 12];
                     commands_1.onHelp(ctx);
-                    return [3 /*break*/, 15];
+                    return [3 /*break*/, 17];
                 case 12:
                     if (!(ctx.message.text == "/setup")) return [3 /*break*/, 13];
                     if (hasLeft)
                         commands_1.onSetUp(ctx);
                     else
                         ctx.reply("You can't setup your preference while you are in a chat.");
-                    return [3 /*break*/, 15];
+                    return [3 /*break*/, 17];
                 case 13:
                     if (!!hasLeft) return [3 /*break*/, 15];
                     return [4 /*yield*/, ctx.telegram.sendMessage(ctx.scene.state.partnerId, "" + ctx.message.text)];
                 case 14:
                     _a.sent();
-                    _a.label = 15;
-                case 15: return [2 /*return*/];
+                    return [3 /*break*/, 17];
+                case 15: return [4 /*yield*/, ctx.reply("You aren't in a chat")];
+                case 16:
+                    _a.sent();
+                    _a.label = 17;
+                case 17: return [2 /*return*/];
             }
         });
     }); });

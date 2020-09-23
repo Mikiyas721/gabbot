@@ -10,7 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "mongodb": "^3.5.7",
     "telegraf": "^3.38.0",
-    "mongodb": "^3.5.7"
+    "telegraf-session-local": "^2.0.0"
   }
 }

@@ -58,7 +58,7 @@ function getRandomPartner(user) {
         });
     });
 }
-exports.default = (function (bot) {
+exports.default = (function (bot, session) {
     bot.start(function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -79,7 +79,7 @@ exports.default = (function (bot) {
     bot.command('begin', function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, exports.onBegin(ctx)];
+                case 0: return [4 /*yield*/, exports.onBegin(ctx, session)];
                 case 1:
                     _a.sent();
                     return [2 /*return*/];
@@ -131,7 +131,7 @@ exports.default = (function (bot) {
         });
     }); };
 });
-exports.onBegin = function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
+exports.onBegin = function (ctx, session) { return __awaiter(void 0, void 0, void 0, function () {
     var user, partnerId;
     return __generator(this, function (_a) {
         switch (_a.label) {

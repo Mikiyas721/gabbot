@@ -1,0 +1,26 @@
+{
+  "sessions": [
+    {
+      "id": "1081281423:1081281423",
+      "data": {
+        "__scenes": {
+          "current": "chatRoom",
+          "state": {
+            "partnerId": 262164706
+          }
+        }
+      }
+    },
+    {
+      "id": "262164706:262164706",
+      "data": {
+        "__scenes": {
+          "current": "chatRoom",
+          "state": {
+            "partnerId": 1081281423
+          }
+        }
+      }
+    }
+  ]
+}

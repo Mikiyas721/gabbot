@@ -1,10 +1,11 @@
 import * as Scene from 'telegraf/scenes/base';
-import * as Session from 'telegraf/session';
+import LocalSession = require('telegraf-session-local');
 import DataBaseManager from './databaseManager';
 import MatchedUsers from "./model/matchedUsers";
 import {onBegin, onHelp, onSetUp} from './commands';
 
-export default (chatRoom: Scene) => {
+
+export default (chatRoom: Scene, session: LocalSession<any>) => {
     chatRoom.on('text', async (ctx) => {
         const hasLeft = await hasPartnerLeft(ctx);
         if (ctx.message.text == "/end") {
@@ -30,6 +31,7 @@ export default (chatRoom: Scene) => {
         } else {
             if (!hasLeft)
                 await ctx.telegram.sendMessage(ctx.scene.state.partnerId, `${ctx.message.text}`);
+            else await ctx.reply("You aren't in a chat");
         }
     });
     chatRoom.on('audio', async (ctx) => {
