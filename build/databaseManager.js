@@ -46,7 +46,7 @@ function setUpDatabaseConnection() {
         var database;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, mongodb_1.MongoClient.connect(config_1.default.DATABASE_URL, { useUnifiedTopology: true })];
+                case 0: return [4 /*yield*/, mongodb_1.MongoClient.connect(config_1.config.DATABASE_URL, { useUnifiedTopology: true })];
                 case 1:
                     database = _a.sent();
                     return [4 /*yield*/, database.db('GabBot')];

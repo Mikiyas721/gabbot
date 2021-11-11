@@ -1,4 +1,4 @@
-import config from './config/config';
+import {config} from './config/config';
 import User from './model/user';
 import MatchedUsers from "./model/matchedUsers";
 import {MongoClient} from "mongodb";
